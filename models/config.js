@@ -13,7 +13,7 @@ var appSchema = new Schema({
     },
     image: {
         type: String
-    }
+    }    
 }, {
     _id: false
 });

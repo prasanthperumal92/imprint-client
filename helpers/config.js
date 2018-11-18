@@ -3,13 +3,13 @@ exports.configs = {
         "id": "dsr",
         "image": "https://image.ibb.co/kFOcvL/small-notes.png",
         "name": "DSR",
-        "api": "http://localhost:1234/api/dsr"
+        "api": "https://imp-cli.herokuapp.com/api/v1/job/dsr"
     },
     tracking: {
         "id": "tracking",
         "image": "https://image.ibb.co/kFOcvL/small-notes.png",
         "name": "Tracking",
-        "api": "http://localhost:1234/api/tracking"
+        "api": "https://imp-cli.herokuapp.com/api/v1/tracking"
     }
 };
 
@@ -86,7 +86,7 @@ exports.meta = {
             "validation": "true",
             "label": "Contact Number",            
             "key": "contact",
-            "priority": 4
+            "priority": 5
         },
         {
             "value": [],
@@ -100,13 +100,23 @@ exports.meta = {
         },
         {
             "value": [],
+            "type": "checkbox",
+            "textSize": "25",
+            "style": "",
+            "validation": "true",
+            "label": "Lead Status",
+            "key": "leads",
+            "priority": 3
+        },
+        {
+            "value": [],
             "type": "textfield",
             "textSize": "25",
             "style": "singleline",
             "label": "Remarks",
             "validation": "false",
             "key": "remarks",
-            "priority": 8
+            "priority": 9
         },
         {
             "value": [],
@@ -116,7 +126,7 @@ exports.meta = {
             "validation": "true",
             "label": "Next FollowUp",            
             "key": "followup",
-            "priority": 5
+            "priority": 6
         },
         {
             "value": [],
@@ -126,7 +136,7 @@ exports.meta = {
             "label": "Co-ordinates",
             "validation": "false",
             "key": "coordinates",
-            "priority": 6
+            "priority": 7
         },
         {
             "value": [],
@@ -136,7 +146,7 @@ exports.meta = {
             "label": "Address",
             "validation": "false",
             "key": "address",
-            "priority": 7
+            "priority": 8
         },
         {
             "value": [],
@@ -146,7 +156,7 @@ exports.meta = {
             "label": "Photo",
             "validation": "false",
             "key": "photo",
-            "priority": 9
+            "priority": 10
         },
         {
             "value": [],
@@ -156,7 +166,7 @@ exports.meta = {
             "label": "Customer signature",
             "validation": "false",
             "key": "signature",
-            "priority": 10
+            "priority": 11
         }
     ]
 }

@@ -1,4 +1,5 @@
 var Meta = require('../models/meta');
+var Config = require('../models/config');
 var _ = require('lodash');
 
 exports.getMeta = function(req, res, next) {
@@ -18,8 +19,29 @@ exports.getMeta = function(req, res, next) {
             });
         } else {
             let data = meta.toJSON();
-            data.fields = _.sortBy(meta.fields, 'priority');
-            return res.status(200).send(data);
+            Config.findByUserId(user._id, function(err, config){
+                if (err) {
+                    return res.status(500).send({
+                        message: "Error Saving Meta data"
+                    });
+                } else {       
+                    console.log(config);
+                    let leads = _.map(config.leads, 'value');
+                    let sales = _.map(config.sales, 'value');
+                    for (let i = 0; i < meta.fields.length; i++) {
+                        if (meta.fields[i].key === 'leads') {
+                            meta.fields[i].value = leads;
+                            break;
+                        } 
+                        if (meta.fields[i].key === 'sales') {
+                            meta.fields[i].value = sales;
+                            break;
+                        }
+                    }
+                    data.fields = _.sortBy(meta.fields, 'priority');
+                    return res.status(200).send(data);
+                }
+            });            
         }
     });
 }
