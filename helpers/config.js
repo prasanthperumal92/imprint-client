@@ -76,7 +76,7 @@ exports.meta = {
             "validation": "true",
             "label": "Contact Person",            
             "key": "person",
-            "priority": 3
+            "priority": 4
         },
         {
             "value": [],

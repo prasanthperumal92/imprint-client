@@ -30,12 +30,9 @@ exports.getMeta = function(req, res, next) {
                     let sales = _.map(config.sales, 'value');
                     for (let i = 0; i < meta.fields.length; i++) {
                         if (meta.fields[i].key === 'leads') {
-                            meta.fields[i].value = leads;
-                            break;
-                        } 
-                        if (meta.fields[i].key === 'sales') {
-                            meta.fields[i].value = sales;
-                            break;
+                            meta.fields[i].value = leads;                            
+                        } else if (meta.fields[i].key === 'sales') {
+                            meta.fields[i].value = sales;                            
                         }
                     }
                     data.fields = _.sortBy(meta.fields, 'priority');
