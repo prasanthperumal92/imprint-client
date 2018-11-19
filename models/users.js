@@ -287,6 +287,11 @@ userSchema.statics.createEmployeeSession = function (id, phone, token, callback)
     }, callback);
 };
 
+userSchema.statics.findByUserId = function (userId, callback) {
+    this.findOne({_id: userId}, callback);
+};
+
+
 userSchema.methods.createSession = function (cb) {
     this.modified = new Date();
     this.accessToken = common.rand();

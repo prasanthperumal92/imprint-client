@@ -19,6 +19,7 @@ router.get('/clients/:name?', cookie.Authenticate, client.clientList);
 
 // DSR Form Meta Data
 router.get('/meta/:name', cookie.Authenticate, meta.getMeta);
-router.post('/job/dsr', cookie.Authenticate, job.createEffort)
+router.post('/job/dsr', cookie.Authenticate, job.createJob);
+router.get('/job/dsr/:id?/:skip?', cookie.Authenticate, job.getJob);
 
 module.exports = router;
