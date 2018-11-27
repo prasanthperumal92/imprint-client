@@ -13,6 +13,9 @@ var jobSchema = new Schema({
     clientId: {
         type: Schema.Types.ObjectId
     },
+    name: {
+        type: String
+    },
     effort: Schema.Types.Mixed
 }, {
     strict: false,

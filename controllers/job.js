@@ -20,6 +20,7 @@ exports.createJob = function (req, res, next) {
     }
 
     effort.employeeId = user.employee._id;
+    effort.name = user.employee.name;
     effort.created = new Date();
     effort = new Job(effort);
     effort.save(function (err) {
