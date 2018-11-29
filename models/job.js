@@ -38,9 +38,9 @@ jobSchema.statics.getJobs = function (ids, skip, callback) {
     }).skip(skip).limit(20).exec(callback);
 }
 
-jobSchema.statics.getJobsDynamic = function (query, sort, skip, limit, callback) {
+jobSchema.statics.getJobsDynamic = function (query, sort, order, skip, limit, callback) {
     this.find(query).sort({
-        [sort]: -1
+        [sort]: order
     }).skip(skip).limit(limit).exec(callback);
 }
 

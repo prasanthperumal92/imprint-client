@@ -113,16 +113,16 @@ exports.getJobs = function (req, res, next) {
 
     !input.skip ? input.skip = 0 : '';
     !input.limit ? input.limit = 20 : '';
-    !input.sort ? input.sort = 'created' : '';
+    !input.sort ? input.sort = 'created' : '';        
 
     getMyTeam(user._id, user.employee._id, function (team) {
         let query;
         teams = team;
         teams.push(user.employee._id);
-        let start = new Date(input.startDate);
+        let start = new Date(input.fromDate);
         start.setHours(0, 0, 0, 0);        
-        if (input.startDate && input.endDate) {
-            let end = new Date(input.endDate);
+        if (input.fromDate && input.toDate) {
+            let end = new Date(input.toDate);
             end.setHours(23, 59, 59, 999);
             query = {
                 employeeId: {
@@ -131,10 +131,10 @@ exports.getJobs = function (req, res, next) {
                 created: {
                     $gte: start,
                     $lte: end
-                }
+                }                
             };
         } else {
-            let end = new Date(input.startDate);
+            let end = new Date(input.fromDate);
             end.setHours(23, 59, 59, 999);
             query = {
                 employeeId: {
@@ -146,8 +146,11 @@ exports.getJobs = function (req, res, next) {
                 }
             };
         }
+        if(input.filter) {
+            query[input.filter.key] = input.filter.value
+        }
         console.log(query);
-        Job.getJobsDynamic(query, input.sort, input.skip, input.limit, function(err, data){
+        Job.getJobsDynamic(query, input.sort, input.order, input.skip, input.limit, function(err, data){
             if (err) {
                 return res.status(500).send({
                     message: "Error Looking up for Job"
