@@ -178,3 +178,17 @@ function getMyTeam(userId, employeeId, cb) {
         }
     });
 }
+
+exports.getFilters = function(req, res, next) {    
+    var user = req.user;    
+    Job.getFilters(function(err, jobs){        
+        if (err) {
+            console.log(err);
+            return res.status(500).send({
+                message: "Error Looking up for Job"
+            });
+        } else {
+            return res.status(200).send(jobs[0]);
+        }
+    });
+}

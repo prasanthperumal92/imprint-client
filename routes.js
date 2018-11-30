@@ -22,5 +22,6 @@ router.get('/meta/:name', cookie.Authenticate, meta.getMeta);
 router.post('/job/dsr', cookie.Authenticate, job.createJob);
 router.get('/job/dsr/:id?/:skip?', cookie.Authenticate, job.getJob);
 router.post('/job/dsr/get', cookie.Authenticate, job.getJobs);
+router.get('/job/filters/dsr', cookie.Authenticate, job.getFilters);
 
 module.exports = router;

@@ -44,5 +44,23 @@ jobSchema.statics.getJobsDynamic = function (query, sort, order, skip, limit, ca
     }).skip(skip).limit(limit).exec(callback);
 }
 
+jobSchema.statics.getFilters = function (callback) {
+    this.aggregate([
+        {$group: {
+            _id: null,
+                name: {
+                    $addToSet: '$name'
+                },
+                sales: {
+                    $addToSet: '$effort.sales'
+                },
+                client: {
+                    $addToSet: '$effort.client'
+                }
+        }}
+    ], callback);
+    //this.distinct('effort.sales', 'name', 'effort.client', {}, callback);
+}
+
 
 module.exports = Job = mongoose.model('Job', jobSchema);
