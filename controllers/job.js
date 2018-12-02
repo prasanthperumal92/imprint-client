@@ -34,6 +34,43 @@ exports.createJob = function (req, res, next) {
     });
 }
 
+exports.getJobForShare = function (req, res, next) {
+    var id = req.params.id;
+
+    if (!id) {
+        return res.status(200).send({});
+    }
+
+    Job.getJobById(id, function (err, job) {
+        if (err) {
+            return res.status(200).send({});
+        } else {
+            return res.status(200).send(job);
+        }
+    });
+}
+
+exports.deleteJob = function(req, res, next) {
+     var user = req.user;
+     var id = req.params.id;
+
+     if(!id) {
+         return res.status(400).send({
+             message: "Please refresh & try again"
+         });
+     }
+
+     Job.deleteJob(id, function(err){
+         if(err) {
+            return res.status(500).send({
+                message: "Error Deleting the Job"
+            });
+         } else {
+            return res.status(200).send();
+         }
+     })
+};
+
 exports.getJob = function (req, res, next) {
     var user = req.user;
     var id = req.params.id;
@@ -109,18 +146,18 @@ exports.getJobs = function (req, res, next) {
         return res.status(400).send({
             message: "Request cannot be null"
         });
-    } 
+    }
 
     !input.skip ? input.skip = 0 : '';
     !input.limit ? input.limit = 20 : '';
-    !input.sort ? input.sort = 'created' : '';        
+    !input.sort ? input.sort = 'created' : '';
 
     getMyTeam(user._id, user.employee._id, function (team) {
         let query;
         teams = team;
         teams.push(user.employee._id);
         let start = new Date(input.fromDate);
-        start.setHours(0, 0, 0, 0);        
+        start.setHours(0, 0, 0, 0);
         if (input.fromDate && input.toDate) {
             let end = new Date(input.toDate);
             end.setHours(23, 59, 59, 999);
@@ -131,7 +168,7 @@ exports.getJobs = function (req, res, next) {
                 created: {
                     $gte: start,
                     $lte: end
-                }                
+                }
             };
         } else {
             let end = new Date(input.fromDate);
@@ -146,11 +183,11 @@ exports.getJobs = function (req, res, next) {
                 }
             };
         }
-        if(input.filter) {
+        if (input.filter) {
             query[input.filter.key] = input.filter.value
         }
         console.log(query);
-        Job.getJobsDynamic(query, input.sort, input.order, input.skip, input.limit, function(err, data){
+        Job.getJobsDynamic(query, input.sort, input.order, input.skip, input.limit, function (err, data) {
             if (err) {
                 return res.status(500).send({
                     message: "Error Looking up for Job"
@@ -179,9 +216,9 @@ function getMyTeam(userId, employeeId, cb) {
     });
 }
 
-exports.getFilters = function(req, res, next) {    
-    var user = req.user;    
-    Job.getFilters(function(err, jobs){        
+exports.getFilters = function (req, res, next) {
+    var user = req.user;
+    Job.getFilters(function (err, jobs) {
         if (err) {
             console.log(err);
             return res.status(500).send({

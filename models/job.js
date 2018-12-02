@@ -44,6 +44,11 @@ jobSchema.statics.getJobsDynamic = function (query, sort, order, skip, limit, ca
     }).skip(skip).limit(limit).exec(callback);
 }
 
+jobSchema.statics.deleteJob = function (id, callback) {
+    this.remove({_id: id}, callback);
+}
+
+
 jobSchema.statics.getFilters = function (callback) {
     this.aggregate([
         {$group: {
