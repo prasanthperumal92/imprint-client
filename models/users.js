@@ -275,6 +275,30 @@ userSchema.statics.lookUpEmployee = function (phone, callback) {
     }, callback);
 };
 
+userSchema.statics.findEmployeeById = function (id, callback) {
+    this.findOne({
+        'employees._id': id
+    }, function (err, user) {
+        if (err) {
+            callback(err, null);
+        } else if (!user) {
+            callback(null, null);
+        } else {
+            console.log(user);
+            var employee = user.toJSON();
+            let emp;
+            delete employee.employees;
+            for (var i = 0; i < user.employees.length; i++) {
+                if (user.employees[i]._id.equals(id)) {
+                    emp = user.employees[i];
+                    break;
+                }
+            }
+            callback(null, emp);
+        }
+    });
+};
+
 userSchema.statics.createEmployeeSession = function (id, phone, token, callback) {
     this.updateOne({
         _id: id,
