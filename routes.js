@@ -6,6 +6,7 @@ const client = require('./controllers/client');
 const meta = require('./controllers/meta');
 const job = require('./controllers/job');
 const task = require('./controllers/task');
+const employee = require('./controllers/employee');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -13,6 +14,10 @@ router.get('/', function (req, res, next) {
         title: 'Express'
     });
 });
+
+// Profile API
+router.get('/employee', cookie.Authenticate, employee.getProfile);
+router.get('/employee/photos', cookie.Authenticate, employee.getPhotos);
 
 // Client API :: Allow to add clients and list
 router.post('/clients', cookie.Authenticate, client.addClient);
