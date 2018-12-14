@@ -62,5 +62,10 @@ var taskSchema = new Schema({
     collection: 'task'
 });
 
+taskSchema.statics.getTasksDynamic = function (query, sort, order, skip, limit, callback) {
+    this.find(query).sort({
+        [sort]: order
+    }).skip(skip).limit(limit).exec(callback);
+}
 
 module.exports = Task = mongoose.model("Task", taskSchema);

@@ -40,4 +40,7 @@ router.post('/task', cookie.Authenticate, task.createTask);
 router.get('/task', cookie.Authenticate, task.getTasks);
 router.get('/task/:id', cookie.Authenticate, task.getTask);
 
+// Web
+router.post('/task/get', cookie.Authenticate, task.getWebTasks);
+
 module.exports = router;
