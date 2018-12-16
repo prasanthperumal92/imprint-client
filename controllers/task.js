@@ -4,23 +4,20 @@ exports.createTask = function (req, res, next) {
     var user = req.user;
     var taskData = req.body;
 
-    if (Object.keys(taskData).length == 0 || !taskData.title || !taskData.client || !taskData.due || !taskData.assignedTo) {
+    if (Object.keys(taskData).length == 0 || !taskData.title || !taskData.client || !taskData.due || !taskData.assignedTo || !taskData.status) {
         return res.status(400).send({
             message: "Invalid Data"
         });
     }
-
+    
     User.findEmployeeById(taskData.assignedTo, function (err, employee) {
         if (err) {
             console.log(err);
             return res.status(500).send({
                 message: "Server is busy, Please try again!"
             })
-        } else {
-            console.log(employee);
-            taskData.created = new Date();
+        } else {                        
             taskData.modified = new Date();
-            taskData.status = "New";
             taskData.due = new Date(taskData.due);
             taskData.assignedTo = {
                 id: employee._id,
@@ -33,17 +30,33 @@ exports.createTask = function (req, res, next) {
                 photo: user.employee.photo
             };
 
-            var data = new Task(taskData);
-
-            data.save(function (err) {
-                if (err) {
-                    return res.status(500).send({
-                        message: "Server is busy, Please try again!"
-                    });
-                } else {
-                    res.status(200).send();
-                }
-            })
+            if (!taskData._id) {
+                taskData.created = new Date();
+                taskData.status = "New";
+                var data = new Task(taskData);
+                
+                data.save(function (err) {
+                    if (err) {
+                        console.log(err);
+                        return res.status(500).send({
+                            message: "Server is busy, Please try again!"
+                        });
+                    } else {
+                        res.status(200).send();
+                    }
+                })
+            } else {
+                Task.findByIdAndUpdate(taskData._id, taskData, function(err){
+                    if (err) {
+                        console.log(err);
+                        return res.status(500).send({
+                            message: "Server is busy, Please try again!"
+                        });
+                    } else {
+                        res.status(200).send();
+                    }
+                });
+            }
         }
     });
 }
