@@ -7,6 +7,7 @@ const meta = require('./controllers/meta');
 const job = require('./controllers/job');
 const task = require('./controllers/task');
 const employee = require('./controllers/employee');
+const leave = require('./controllers/leave');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -23,24 +24,28 @@ router.get('/employee/photos', cookie.Authenticate, employee.getPhotos);
 router.post('/clients', cookie.Authenticate, client.addClient);
 router.get('/clients/:name?', cookie.Authenticate, client.clientList);
 
+
 // DSR Form Meta Data - APP
 router.get('/meta/:name', cookie.Authenticate, meta.getMeta);
 router.get('/job/dsr/:id?/:skip?', cookie.Authenticate, job.getJob);
 router.post('/job/dsr', cookie.Authenticate, job.createJob);
-
- // Web 
+// Web 
 router.post('/job/dsr/get', cookie.Authenticate, job.getJobs);
 router.get('/job/filters/dsr', cookie.Authenticate, job.getFilters);
 router.get('/job/get/dsr/:id', job.getJobForShare);
 router.delete('/job/dsr/:id', cookie.Authenticate, job.deleteJob);
 
-
 // TASK : API
 router.post('/task', cookie.Authenticate, task.createTask);
 router.get('/task', cookie.Authenticate, task.getTasks);
 router.get('/task/:id', cookie.Authenticate, task.getTask);
-
 // Web
 router.post('/task/get', cookie.Authenticate, task.getWebTasks);
+
+// LEAVE : API
+router.post('/leave', cookie.Authenticate, leave.createLeave);
+router.put('/leave', cookie.Authenticate, leave.updateLeave);
+router.get('/leave/:status?', cookie.Authenticate, leave.getLeaves);
+
 
 module.exports = router;

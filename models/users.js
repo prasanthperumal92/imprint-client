@@ -234,16 +234,16 @@ userSchema.statics.findByAuthKey = function (authKey, callback) {
 userSchema.statics.findEmpAuthKey = function (authKey, callback) {
     this.findOne({
         'employees.accessToken': authKey
-    }, function(err, user){        
-        if(err){
-            callback(err, null);            
-        } else if(!user){
+    }, function (err, user) {
+        if (err) {
+            callback(err, null);
+        } else if (!user) {
             callback(null, null);
         } else {
             var employee = user.toJSON();
             delete employee.employees;
-            for(var i=0; i<user.employees.length; i++){
-                if(authKey === user.employees[i].accessToken){
+            for (var i = 0; i < user.employees.length; i++) {
+                if (authKey === user.employees[i].accessToken) {
                     employee.employee = user.employees[i];
                     break;
                 }
@@ -284,7 +284,6 @@ userSchema.statics.findEmployeeById = function (id, callback) {
         } else if (!user) {
             callback(null, null);
         } else {
-            console.log(user);
             var employee = user.toJSON();
             let emp;
             delete employee.employees;
@@ -312,7 +311,9 @@ userSchema.statics.createEmployeeSession = function (id, phone, token, callback)
 };
 
 userSchema.statics.findByUserId = function (userId, callback) {
-    this.findOne({_id: userId}, callback);
+    this.findOne({
+        _id: userId
+    }, callback);
 };
 
 
@@ -326,16 +327,16 @@ userSchema.methods.toJSON = function () {
     return {
         _id: this.id,
         username: this.username,
-        registrationId: this.registrationId,        
+        registrationId: this.registrationId,
         name: this.name,
         photo: this.photo,
         active: this.active,
         landline: this.landline,
         phone: this.phone,
-        email: this.email,        
-        address: this.address,                
+        email: this.email,
+        address: this.address,
         creadted: this.creadted,
-        modified: this.modified,        
+        modified: this.modified,
         employees: this.employees
     }
 };
@@ -344,7 +345,7 @@ employeeSchema.methods.toJSON = function () {
     return {
         _id: this.id,
         name: this.name,
-        employeeId: this.employeeId,                
+        employeeId: this.employeeId,
         photo: this.photo,
         type: this.type,
         designation: this.designation,
@@ -353,8 +354,8 @@ employeeSchema.methods.toJSON = function () {
         email: this.email,
         address: this.address,
         creadted: this.creadted,
-        modified: this.modified,        
-        reportingTo: this.reportingTo,        
+        modified: this.modified,
+        reportingTo: this.reportingTo,
     }
 };
 

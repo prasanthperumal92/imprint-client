@@ -9,14 +9,14 @@ exports.createTask = function (req, res, next) {
             message: "Invalid Data"
         });
     }
-    
+
     User.findEmployeeById(taskData.assignedTo, function (err, employee) {
         if (err) {
             console.log(err);
             return res.status(500).send({
                 message: "Server is busy, Please try again!"
             })
-        } else {                        
+        } else {
             taskData.modified = new Date();
             taskData.due = new Date(taskData.due);
             taskData.assignedTo = {
@@ -34,7 +34,7 @@ exports.createTask = function (req, res, next) {
                 taskData.created = new Date();
                 taskData.status = "New";
                 var data = new Task(taskData);
-                
+
                 data.save(function (err) {
                     if (err) {
                         console.log(err);
@@ -46,7 +46,7 @@ exports.createTask = function (req, res, next) {
                     }
                 })
             } else {
-                Task.findByIdAndUpdate(taskData._id, taskData, function(err){
+                Task.findByIdAndUpdate(taskData._id, taskData, function (err) {
                     if (err) {
                         console.log(err);
                         return res.status(500).send({
@@ -66,17 +66,11 @@ exports.getTasks = function (req, res, next) {
     let query = {};
     if (user.employee.type == 'manager') {
         query = {
-            'assignedBy.id': user.employee._id,
-            'status': {
-                $ne: 'Removed'
-            }
+            'assignedBy.id': user.employee._id
         }
     } else {
         query = {
-            'assignedTo.id': user.employee._id,
-            'status': {
-                $ne: 'Removed'
-            }
+            'assignedTo.id': user.employee._id
         }
     }
     console.log(query);
@@ -91,10 +85,10 @@ exports.getTasks = function (req, res, next) {
     })
 }
 
-exports.getTask = function(req, res, next) {
+exports.getTask = function (req, res, next) {
     var user = req.user;
     var taskId = req.params.id;
-    
+
     if (!taskId) {
         return res.status(400).send({
             message: "Invalid Data"
@@ -112,7 +106,7 @@ exports.getTask = function(req, res, next) {
     })
 }
 
-exports.getWebTasks = function(req, res, next) {
+exports.getWebTasks = function (req, res, next) {
     var user = req.user;
     var input = req.body;
     let query = {};
