@@ -6,7 +6,7 @@ exports.createLeave = function (req, res, next) {
     var user = req.user;
     var leaveData = req.body;
 
-    if (Object.keys(leaveData).length == 0 || !leaveData.type || !leaveData.from || !leaveData.to) {
+    if (Object.keys(leaveData).length == 0 || !leaveData.type || !leaveData.start || !leaveData.end || !leaveData.title) {
         return res.status(400).send({
             message: "Invalid Data"
         });
@@ -22,13 +22,13 @@ exports.createLeave = function (req, res, next) {
         } else if (data) {
             let days = [];
             for (let i = 0; i < data.length; i++) {
-                let tmp = getDates(data[i].from, data[i].to);
+                let tmp = getDates(data[i].start, data[i].end);
                 for (let i in tmp) {
                     days.push(tmp[i]);
                 }
             }
             console.log('Days', days);
-            let currentLeaves = getDates(leaveData.from, leaveData.to);
+            let currentLeaves = getDates(leaveData.start, leaveData.end);
             console.log('Current Leaves', currentLeaves);
             let isApplied = _.intersection(days, currentLeaves);
             if (isApplied.length > 0) {
@@ -63,7 +63,7 @@ function saveUpdateData(user, leaveData, res) {
                 photo: user.employee.photo
             };
 
-            leaveData.days = getDates(leaveData.from, leaveData.to).length;
+            leaveData.days = getDates(leaveData.start, leaveData.end).length;
 
             leaveData.created = new Date();
             leaveData.modified = new Date();

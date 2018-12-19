@@ -16,6 +16,9 @@ var assignSchema = new Schema({
 });
 
 var leaveSchema = new Schema({
+    title: {
+        type: String
+    },
     type: {
         type: String,
         enum: ['Sick Leave', 'Casual Leave', 'Privilege leave', 'Other']
@@ -26,10 +29,10 @@ var leaveSchema = new Schema({
     created: {
         type: Date
     },
-    from: {
+    start: {
         type: Date
     },
-    to: {
+    end: {
         type: Date
     },
     days: {
