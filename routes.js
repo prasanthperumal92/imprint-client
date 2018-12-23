@@ -8,6 +8,7 @@ const job = require('./controllers/job');
 const task = require('./controllers/task');
 const employee = require('./controllers/employee');
 const leave = require('./controllers/leave');
+const track = require('./controllers/track');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -47,5 +48,8 @@ router.post('/leave', cookie.Authenticate, leave.createLeave);
 router.put('/leave', cookie.Authenticate, leave.updateLeave);
 router.get('/leave/:status?', cookie.Authenticate, leave.getLeaves);
 
+// TRACK : API
+router.post('/track', cookie.Authenticate, track.createTracks);
+router.get('/track', cookie.Authenticate, track.getTracks);
 
 module.exports = router;
