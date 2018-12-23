@@ -63,4 +63,10 @@ leaveSchema.statics.checkExistingLeaves = function (id, callback) {
     }, callback);
 }
 
+leaveSchema.statics.getLeavesDynamic = function (query, sort, order, skip, limit, callback) {
+    this.find(query).sort({
+        [sort]: order
+    }).skip(skip).limit(limit).exec(callback);
+}
+
 module.exports = Leave = mongoose.model("Leave", leaveSchema);

@@ -47,6 +47,7 @@ router.post('/task/get', cookie.Authenticate, task.getWebTasks);
 router.post('/leave', cookie.Authenticate, leave.createLeave);
 router.put('/leave', cookie.Authenticate, leave.updateLeave);
 router.get('/leave/:status?', cookie.Authenticate, leave.getLeaves);
+router.post('/leaves', cookie.Authenticate, leave.getWebLeaves);
 
 // TRACK : API
 router.post('/track', cookie.Authenticate, track.createTracks);

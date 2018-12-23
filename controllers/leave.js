@@ -147,3 +147,55 @@ function getDates(startDate, stopDate) {
     }
     return dateArray;
 }
+
+exports.getWebLeaves = function (req, res, next) {
+    var user = req.user;
+    var input = req.body;
+    let query = {};
+
+    if (!input || Object.keys(input).length === 0) {
+        return res.status(400).send({
+            message: "Request cannot be null"
+        });
+    }
+
+    !input.skip ? input.skip = 0 : '';
+    !input.limit ? input.limit = 20 : '';
+    !input.sort ? input.sort = 'created' : '';
+
+    let start = new Date(input.fromDate);
+    start.setHours(0, 0, 0, 0);
+    let end = new Date(input.toDate);
+    end.setHours(23, 59, 59, 999);
+    if (user.employee.type == 'manager') {
+        query = {
+            'approvedBy.id': user.employee._id,
+            'created': {
+                $gte: start,
+                $lte: end
+            }
+        }
+    } else {
+        query = {
+            'appliedBy.id': user.employee._id,
+            'created': {
+                $gte: start,
+                $lte: end
+            }
+        }
+    }
+
+    if (input.filter) {
+        query[input.filter.key] = input.filter.value
+    }
+
+    Leave.getLeavesDynamic(query, input.sort, input.order, input.skip, input.limit, function (err, data) {
+        if (err) {
+            return res.status(500).send({
+                message: "Error Looking up for Task"
+            });
+        } else {
+            return res.status(200).send(data);
+        }
+    });
+}
