@@ -51,6 +51,6 @@ router.post('/leaves', cookie.Authenticate, leave.getWebLeaves);
 
 // TRACK : API
 router.post('/track', cookie.Authenticate, track.createTracks);
-router.get('/track', cookie.Authenticate, track.getTracks);
+router.get('/track/:id?', cookie.Authenticate, track.getTracks);
 
 module.exports = router;

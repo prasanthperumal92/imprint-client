@@ -32,9 +32,9 @@ exports.createTracks = function (req, res, next) {
 exports.getTracks = function (req, res, next) {
     var user = req.user;
     var created = moment().startOf('day');
-    console.log(created);
-    console.log(created.valueOf())
-    Track.getTrackByUserId(user._id, created, function (err, list) {
+    var id = req.params.id || user.employee._id;
+
+    Track.getTrackByUserId(id, created, function (err, list) {
         if (err) {
             console.log(err);
             return res.status(500).send({
