@@ -16,7 +16,7 @@ exports.createTracks = function (req, res, next) {
     var today = moment().startOf('day');
 
 
-    Track.updateLocation(user._id, today, location, function (err, track) {
+    Track.updateLocation(user.employee._id, today, location, function (err, track) {
         if (err) {
             console.log(err);
             return res.status(500).send({
