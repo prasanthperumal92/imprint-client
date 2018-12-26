@@ -2,11 +2,15 @@ var Client = require('../models/clients');
 var common = require('../helpers/common');
 var _ = require('lodash');
 
+var CLIENTID = 'CLIENT0005001';
+
 exports.addClient = function (req, res, next) {
     var user = req.user;
     var client = req.body;
 
-    if (!client || Object.keys(client).length === 0 || !client.name) {
+    console.log(user);
+
+    if (!client || Object.keys(client).length === 0 || !client.name || !client.address || !client.contact || !client.person) {
         return res.status(400).send({
             message: "Some Mandatory field is missing"
         });
@@ -25,29 +29,88 @@ exports.addClient = function (req, res, next) {
         result.push(common.capitalizeFirstLetter(name[i]));
     }
 
-    var data = new Client({
-        name: result.join(' ')
-    });
-    data.save(function (err) {
-        // If duplicate error then it is already available so use the same one
-        if (err && !err.code === 11000) {
+    name = result.join(' ');
+
+    Client.findByName(name, function (err, clients) {
+        if (err) {
             return res.status(401).send({
-                message: "Error Saving Client Information"
+                message: "Error looking up Client Information"
+            });
+        } else if (clients.length > 0) {
+            return res.status(409).send({
+                message: "Already a Client available with this name"
             });
         } else {
-            return res.status(201).send();
+            Client.findLatest(function (err, latest) {
+                console.log(err, latest);
+                if (err) {
+                    return res.status(401).send({
+                        message: "Error looking up Client Information"
+                    });
+                } else {
+                    if (latest.length > 0 && latest[0].clientId) {
+                        let tmp = latest[0].clientId.split('T');
+                        let n = parseInt(tmp[1]);
+                        n++;
+                        client.clientId = 'CLIENT000' + n;
+                    } else {
+                        client.clientId = CLIENTID;
+                    }
+
+                    var createdBy = {
+                        id: user.employee._id.toString(),
+                        name: user.employee.name,
+                        photo: user.employee.photo,
+                    };
+                    var log = {
+                        created: new Date(),
+                        text: 'Created',
+                        type: 'client',
+                        by: user.employee.name
+                    };
+
+                    if (user.employee.type !== 'manager') {
+                        client.assignedTo = createdBy;
+                    }
+
+                    client.name = name;
+                    client.createdBy = createdBy;
+                    client.logs = [];
+                    client.logs.push(log);
+
+                    console.log(client);
+
+                    var data = new Client(client);
+                    data.save(function (err) {
+                        // If duplicate error then it is already available so use the same one
+                        if (err && !err.code === 11000) {
+                            return res.status(401).send({
+                                message: "Error Saving Client Information"
+                            });
+                        } else {
+                            return res.status(201).send();
+                        }
+                    });
+                }
+            });
         }
     });
-
 }
-
 
 exports.clientList = function (req, res, next) {
     var user = req.user;
-    var name = req.params.name;
+    var id = req.params.id;
 
     if (!name) {
-        Client.find({}, function (err, clients) {
+        Client.find({}, {
+            name: 1,
+            clientId: 1,
+            address: 1,
+            contact: 1,
+            person: 1,
+            createdBy: 1,
+            assignedTo: 1
+        }, function (err, clients) {
             if (err) {
                 return res.status(401).send({
                     message: "Error looking up Client Information"
@@ -58,7 +121,7 @@ exports.clientList = function (req, res, next) {
         });
     } else {
         Client.find({
-            name: { $regex: name, $options: 'i' }
+            clientId: id
         }, function (err, clients) {
             if (err) {
                 return res.status(401).send({

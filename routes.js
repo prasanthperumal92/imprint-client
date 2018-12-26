@@ -23,7 +23,7 @@ router.get('/employee/photos', cookie.Authenticate, employee.getPhotos);
 
 // Client API :: Allow to add clients and list
 router.post('/clients', cookie.Authenticate, client.addClient);
-router.get('/clients/:name?', cookie.Authenticate, client.clientList);
+router.get('/clients/:id?', cookie.Authenticate, client.clientList);
 
 
 // DSR Form Meta Data - APP
@@ -51,6 +51,6 @@ router.post('/leaves', cookie.Authenticate, leave.getWebLeaves);
 
 // TRACK : API
 router.post('/track', cookie.Authenticate, track.createTracks);
-router.get('/track/:id?', cookie.Authenticate, track.getTracks);
+router.get('/track/:id?/:date?', cookie.Authenticate, track.getTracks);
 
 module.exports = router;

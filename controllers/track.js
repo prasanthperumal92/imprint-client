@@ -34,13 +34,18 @@ exports.getTracks = function (req, res, next) {
     var created = moment().startOf('day');
     var id = req.params.id || user.employee._id;
 
-    Track.getTrackByUserId(id, created, function (err, list) {
+    console.log(id, user);
+
+    let createdOn = req.params.date || created;
+
+    Track.getTrackByUserId(id, createdOn, function (err, list) {
         if (err) {
             console.log(err);
             return res.status(500).send({
                 message: "Server is busy, Please try again!"
             })
         } else {
+            console.log(list);
             return res.status(200).send(list);
         }
     })
