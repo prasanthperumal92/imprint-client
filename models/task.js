@@ -16,24 +16,12 @@ var assignSchema = new Schema({
     _id: false
 });
 
-var taskSchema = new Schema({        
-    title : {
+var taskSchema = new Schema({
+    title: {
         type: String,
         required: true
     },
     description: {
-        type: String
-    },
-    client: {
-        type: String
-    },
-    location: {
-        type: String
-    },
-    contact: {
-        type: String
-    },
-    person: {
         type: String
     },
     due: {
@@ -46,18 +34,12 @@ var taskSchema = new Schema({
         required: true
     },
     modified: {
-        type: Date        
+        type: Date
     },
     status: {
         type: String,
         enum: ['New', 'Progress', 'Done', 'Completed', 'Removed']
-    },
-    sales: {
-        type: String        
-    },
-    lead: {
-        type: String
-    }    
+    }
 }, {
     collection: 'task'
 });

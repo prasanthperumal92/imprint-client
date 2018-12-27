@@ -4,7 +4,7 @@ exports.createTask = function (req, res, next) {
     var user = req.user;
     var taskData = req.body;
 
-    if (Object.keys(taskData).length == 0 || !taskData.title || !taskData.client || !taskData.due || !taskData.assignedTo || !taskData.status) {
+    if (Object.keys(taskData).length == 0 || !taskData.title || !taskData.due || !taskData.assignedTo || !taskData.status) {
         return res.status(400).send({
             message: "Invalid Data"
         });
