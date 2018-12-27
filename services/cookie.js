@@ -21,8 +21,8 @@ function ensureUser(req, res, next) {
                 message: "Invalid Authentication token"
             });
         } else {
-            req.user = user;
+            req.user = JSON.parse(JSON.stringify(user));
             return next();
         }
     });
-}
+};
