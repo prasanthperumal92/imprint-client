@@ -75,6 +75,8 @@ exports.addClient = function (req, res, next) {
 
                     client.name = name;
                     client.createdBy = createdBy;
+                    client.created = new Date();
+                    client.modified = new Date();
                     client.logs = [];
                     client.logs.push(log);
 

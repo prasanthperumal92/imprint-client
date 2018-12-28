@@ -73,7 +73,13 @@ var clientSchema = new Schema({
     assignedTo: assignSchema,
     createdBy: assignSchema,
     logs: [logsSchema],
-    reference: [referenceSchema]
+    reference: [referenceSchema],
+    created: {
+        type: Date
+    },
+    modified: {
+        type: Date
+    }
 }, {
     collection: 'client'
 });
