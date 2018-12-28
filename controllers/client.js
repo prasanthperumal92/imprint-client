@@ -101,7 +101,7 @@ exports.clientList = function (req, res, next) {
     var user = req.user;
     var id = req.params.id;
 
-    if (!name) {
+    if (!id) {
         Client.find({}, {
             name: 1,
             clientId: 1,
