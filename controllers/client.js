@@ -116,11 +116,9 @@ exports.clientList = function (req, res, next) {
         Client.find(query, {
             name: 1,
             clientId: 1,
-            address: 1,
-            contact: 1,
-            person: 1,
             createdBy: 1,
-            assignedTo: 1
+            assignedTo: 1,
+            modified: 1
         }, function (err, clients) {
             if (err) {
                 return res.status(401).send({
