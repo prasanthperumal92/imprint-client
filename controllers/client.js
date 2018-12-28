@@ -102,7 +102,16 @@ exports.clientList = function (req, res, next) {
     var id = req.params.id;
 
     if (!id) {
-        Client.find({}, {
+
+        if (user.employee.type == 'manager') {
+            query = {};
+        } else {
+            query = {
+                'createdBy.id': user.employee._id
+            }
+        }
+
+        Client.find(query, {
             name: 1,
             clientId: 1,
             address: 1,
