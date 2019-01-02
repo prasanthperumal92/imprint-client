@@ -1,5 +1,6 @@
 var Job = require('../models/job');
 var User = require('../models/users');
+var Client = require('../models/clients');
 var ObjectId = require("mongoose").Schema.Types.ObjectId;
 var moment = require('moment');
 
@@ -29,7 +30,21 @@ exports.createJob = function (req, res, next) {
                 message: "Error Creating Job"
             });
         } else {
-            return res.status(201).send();
+            Client.update({
+                _id: effort.clientId
+            }, {
+                $push: {
+                    logs: {
+                        created: new Date(),
+                        text: 'Created',
+                        type: 'DSR',
+                        by: effort.name
+                    }
+                }
+            }, function (err, result) {
+                console.log(err, result);
+                return res.status(201).send();
+            });
         }
     });
 }
@@ -50,25 +65,25 @@ exports.getJobForShare = function (req, res, next) {
     });
 }
 
-exports.deleteJob = function(req, res, next) {
-     var user = req.user;
-     var id = req.params.id;
+exports.deleteJob = function (req, res, next) {
+    var user = req.user;
+    var id = req.params.id;
 
-     if(!id) {
-         return res.status(400).send({
-             message: "Please refresh & try again"
-         });
-     }
+    if (!id) {
+        return res.status(400).send({
+            message: "Please refresh & try again"
+        });
+    }
 
-     Job.deleteJob(id, function(err){
-         if(err) {
+    Job.deleteJob(id, function (err) {
+        if (err) {
             return res.status(500).send({
                 message: "Error Deleting the Job"
             });
-         } else {
+        } else {
             return res.status(200).send();
-         }
-     })
+        }
+    })
 };
 
 exports.getJob = function (req, res, next) {
