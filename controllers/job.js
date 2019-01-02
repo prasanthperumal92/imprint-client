@@ -33,6 +33,7 @@ exports.createJob = function (req, res, next) {
             Client.update({
                 _id: effort.clientId
             }, {
+                modified: new Date(),
                 $push: {
                     logs: {
                         created: new Date(),
