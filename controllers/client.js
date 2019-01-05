@@ -22,16 +22,7 @@ exports.addClient = function (req, res, next) {
         });
     }
 
-    // Make Each word's first letter to UpperCase to regulate the names
-    let name = client.name.toLowerCase().split(' ');
-    let result = [];
-    for (let i = 0; i < name.length; i++) {
-        result.push(common.capitalizeFirstLetter(name[i]));
-    }
-
-    name = result.join(' ');
-
-    Client.findByName(name, function (err, clients) {
+    Client.findByName(client.name, function (err, clients) {
         if (err) {
             return res.status(401).send({
                 message: "Error looking up Client Information"
@@ -65,7 +56,7 @@ exports.addClient = function (req, res, next) {
                     var log = {
                         created: new Date(),
                         text: 'Created',
-                        type: 'client',
+                        type: 'Client',
                         by: user.employee.name
                     };
 
@@ -73,7 +64,6 @@ exports.addClient = function (req, res, next) {
                         client.assignedTo = createdBy;
                     }
 
-                    client.name = name;
                     client.createdBy = createdBy;
                     client.created = new Date();
                     client.modified = new Date();
@@ -93,6 +83,65 @@ exports.addClient = function (req, res, next) {
                             return res.status(201).send();
                         }
                     });
+                }
+            });
+        }
+    });
+}
+
+exports.editClient = function (req, res, next) {
+    var user = req.user;
+    var client = req.body;
+
+    console.log(user);
+
+    if (!client || Object.keys(client).length === 0 || !client.name || !client.address || !client.contact || !client.person || !client.id) {
+        return res.status(400).send({
+            message: "Some Mandatory field is missing"
+        });
+    }
+
+    if (client.name.length < 8) {
+        return res.status(400).send({
+            message: "Client name should be minimum * characters length"
+        });
+    }
+
+    Client.findByName(client.name, function (err, clients) {
+        if (err) {
+            return res.status(401).send({
+                message: "Error looking up Client Information"
+            });
+        } else if (clients.length > 0) {
+            return res.status(409).send({
+                message: "Already a Client available with this name"
+            });
+        } else {
+            var log = {
+                created: new Date(),
+                text: 'Updated',
+                type: 'Client',
+                by: user.employee.name
+            };
+            Client.update({
+                _id: client.id
+            }, {
+                $push: {
+                    logs: log
+                },
+                address: client.address,
+                name: client.name,
+                person: client.person,
+                contact: client.contact,
+                assignedTo: client.assignedTo,
+                modified: new Date()
+            }, function (err, data) {
+                if (err && !err.code === 11000) {
+                    return res.status(401).send({
+                        message: "Error Saving Client Information"
+                    });
+                } else {
+                    return res.status(201).send();
                 }
             });
         }

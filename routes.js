@@ -23,6 +23,7 @@ router.get('/employee/photos', cookie.Authenticate, employee.getPhotos);
 
 // Client API :: Allow to add clients and list
 router.post('/clients', cookie.Authenticate, client.addClient);
+router.put('/clients', cookie.Authenticate, client.editClient);
 router.get('/clients/:id?', cookie.Authenticate, client.clientList);
 
 
