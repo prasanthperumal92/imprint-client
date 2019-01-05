@@ -148,6 +148,39 @@ exports.editClient = function (req, res, next) {
     });
 }
 
+exports.addReference = function (req, res, next) {
+    var user = req.user;
+    var refer = req.body;
+
+    if (!refer || Object.keys(refer).length === 0 || !refer.reference || !refer.id) {
+        return res.status(400).send({
+            message: "Some Mandatory field is missing"
+        });
+    }
+
+    var obj = {
+        created: new Date(),
+        description: refer.reference,
+        type: 'Feedback',
+        by: user.employee.name
+    };
+    Client.update({
+        _id: refer.id
+    }, {
+        $push: {
+            reference: obj
+        }
+    }, function (err, data) {
+        if (err && !err.code === 11000) {
+            return res.status(401).send({
+                message: "Error Adding Client Reference"
+            });
+        } else {
+            return res.status(200).send();
+        }
+    });
+}
+
 exports.clientList = function (req, res, next) {
     var user = req.user;
     var id = req.params.id;

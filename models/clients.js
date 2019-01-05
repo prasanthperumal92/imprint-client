@@ -45,6 +45,9 @@ var referenceSchema = new Schema({
     type: {
         type: String,
         default: 'Feedback'
+    },
+    by: {
+        type: String
     }
 });
 

@@ -25,7 +25,7 @@ router.get('/employee/photos', cookie.Authenticate, employee.getPhotos);
 router.post('/clients', cookie.Authenticate, client.addClient);
 router.put('/clients', cookie.Authenticate, client.editClient);
 router.get('/clients/:id?', cookie.Authenticate, client.clientList);
-
+router.post('/clients/reference', cookie.Authenticate, client.addReference);
 
 // DSR Form Meta Data - APP
 router.get('/meta/:name', cookie.Authenticate, meta.getMeta);
