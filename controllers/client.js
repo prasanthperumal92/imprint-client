@@ -95,7 +95,7 @@ exports.editClient = function (req, res, next) {
 
     console.log(user);
 
-    if (!client || Object.keys(client).length === 0 || !client.name || !client.address || !client.contact || !client.person || !client.id) {
+    if (!client || Object.keys(client).length === 0 || !client.name || !client.address || !client.contact || !client.person || !client._id) {
         return res.status(400).send({
             message: "Some Mandatory field is missing"
         });
@@ -124,7 +124,7 @@ exports.editClient = function (req, res, next) {
                 by: user.employee.name
             };
             Client.update({
-                _id: client.id
+                _id: client._id
             }, {
                 $push: {
                     logs: log
