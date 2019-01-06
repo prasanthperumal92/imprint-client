@@ -17,6 +17,9 @@ router.get('/', function (req, res, next) {
     });
 });
 
+// Common API
+router.get('/calendar/:year/:month', cookie.Authenticate, meta.getAllDetails);
+
 // Profile API
 router.get('/employee', cookie.Authenticate, employee.getProfile);
 router.get('/employee/photos', cookie.Authenticate, employee.getPhotos);
