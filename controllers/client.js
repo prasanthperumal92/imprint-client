@@ -152,7 +152,7 @@ exports.addReference = function (req, res, next) {
     var user = req.user;
     var refer = req.body;
 
-    if (!refer || Object.keys(refer).length === 0 || !refer.reference || !refer.id) {
+    if (!refer || Object.keys(refer).length === 0 || !refer.reference || !refer._id) {
         return res.status(400).send({
             message: "Some Mandatory field is missing"
         });
@@ -165,7 +165,7 @@ exports.addReference = function (req, res, next) {
         by: user.employee.name
     };
     Client.update({
-        _id: refer.id
+        _id: refer._id
     }, {
         $push: {
             reference: obj
