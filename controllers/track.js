@@ -36,7 +36,7 @@ exports.getTracks = function (req, res, next) {
 
     console.log(id, user);
 
-    let createdOn = req.params.date || created;
+    let createdOn = moment(new Date(req.params.date)).startOf('day') || created;
 
     Track.getTrackByUserId(id, createdOn, function (err, list) {
         if (err) {
