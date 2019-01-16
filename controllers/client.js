@@ -1,6 +1,7 @@
 var Client = require('../models/clients');
 var common = require('../helpers/common');
 var _ = require('lodash');
+var Log = require('../models/log');
 
 var CLIENTID = 'CLIENT0005001';
 
@@ -80,6 +81,15 @@ exports.addClient = function (req, res, next) {
                                 message: "Error Saving Client Information"
                             });
                         } else {
+                            Log.addLog({
+                                userId: user.employee._id,
+                                clientId: user._id,
+                                clientName: client.name,
+                                text: 'Created a Client ' + client.name,
+                                type: 'client',
+                                by: user.employee.name,
+                                created: new Date()
+                            });
                             return res.status(201).send();
                         }
                     });
@@ -141,6 +151,15 @@ exports.editClient = function (req, res, next) {
                         message: "Error Saving Client Information"
                     });
                 } else {
+                    Log.addLog({
+                        userId: user.employee._id,
+                        clientId: user._id,
+                        clientName: client.name,
+                        text: 'Updated the Client ' + client.name,
+                        type: 'client',
+                        by: user.employee.name,
+                        created: new Date()
+                    });
                     return res.status(201).send();
                 }
             });
@@ -176,6 +195,15 @@ exports.addReference = function (req, res, next) {
                 message: "Error Adding Client Reference"
             });
         } else {
+            Log.addLog({
+                userId: user.employee._id,
+                clientId: user._id,
+                clientName: client.name,
+                text: 'Added Reference to the Client ' + client.name,
+                type: 'client',
+                by: user.employee.name,
+                created: new Date()
+            });
             return res.status(200).send();
         }
     });

@@ -1,6 +1,7 @@
 var Leave = require('../models/leaves');
 var moment = require('moment');
 var _ = require('lodash');
+var Log = require('../models/log');
 
 exports.createLeave = function (req, res, next) {
     var user = req.user;
@@ -76,6 +77,14 @@ function saveUpdateData(user, leaveData, res) {
                         message: "Server is busy, Please try again!"
                     });
                 } else {
+                    Log.addLog({
+                        userId: user.employee._id,
+                        clientId: user._id,
+                        text: 'Applied ' + leaveData.type + ' on ' + leaveData.start + ' for ' + leaveData.days,
+                        type: 'leave',
+                        by: user.employee.name,
+                        created: new Date()
+                    });
                     res.status(200).send();
                 }
             })
@@ -103,6 +112,14 @@ exports.updateLeave = function (req, res, next) {
                 message: "Server is busy, Please try again!"
             });
         } else {
+            Log.addLog({
+                userId: user.employee._id,
+                clientId: user._id,
+                text: leaveData.status + ' ' + leaveData.type + ' on ' + leaveData.start + ' for ' + leaveData.days,
+                type: 'leave',
+                by: user.employee.name,
+                created: new Date()
+            });
             res.status(200).send();
         }
     });

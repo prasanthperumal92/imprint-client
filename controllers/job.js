@@ -1,6 +1,7 @@
 var Job = require('../models/job');
 var User = require('../models/users');
 var Client = require('../models/clients');
+var Log = require('../models/log');
 var ObjectId = require("mongoose").Schema.Types.ObjectId;
 var moment = require('moment');
 
@@ -44,6 +45,15 @@ exports.createJob = function (req, res, next) {
                 }
             }, function (err, result) {
                 console.log(err, result);
+                Log.addLog({
+                    userId: user.employee._id,
+                    clientId: user._id,
+                    clientName: effort.client,
+                    text: 'Created an DSR for client ' + effort.client,
+                    type: 'dsr',
+                    by: user.employee.name,
+                    created: new Date()
+                });
                 return res.status(201).send();
             });
         }
@@ -76,15 +86,36 @@ exports.deleteJob = function (req, res, next) {
         });
     }
 
-    Job.deleteJob(id, function (err) {
+    Job.getJobById(id, function (err, job) {
         if (err) {
             return res.status(500).send({
                 message: "Error Deleting the Job"
             });
+        } else if (job) {
+            Job.deleteJob(id, function (err) {
+                if (err) {
+                    return res.status(500).send({
+                        message: "Error Deleting the Job"
+                    });
+                } else {
+                    Log.addLog({
+                        userId: user.employee._id,
+                        clientId: user._id,
+                        clientName: job.effort.client,
+                        text: 'Deleted the DSR for client ' + job.effort.client,
+                        type: 'dsr',
+                        by: user.employee.name,
+                        created: new Date()
+                    });
+                    return res.status(200).send();
+                }
+            })
         } else {
             return res.status(200).send();
         }
-    })
+    });
+
+
 };
 
 exports.getJob = function (req, res, next) {

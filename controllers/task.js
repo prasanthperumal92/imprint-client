@@ -1,5 +1,7 @@
 var User = require('../models/users');
 var Task = require('../models/task');
+var Log = require('../models/log');
+
 exports.createTask = function (req, res, next) {
     var user = req.user;
     var taskData = req.body;
@@ -42,6 +44,14 @@ exports.createTask = function (req, res, next) {
                             message: "Server is busy, Please try again!"
                         });
                     } else {
+                        Log.addLog({
+                            userId: user.employee._id,
+                            clientId: user._id,
+                            text: 'Created a Task',
+                            type: 'task',
+                            by: user.employee.name,
+                            created: new Date()
+                        });
                         res.status(200).send();
                     }
                 })
@@ -53,6 +63,14 @@ exports.createTask = function (req, res, next) {
                             message: "Server is busy, Please try again!"
                         });
                     } else {
+                        Log.addLog({
+                            userId: user.employee._id,
+                            clientId: user._id,
+                            text: 'Updated the Task',
+                            type: 'task',
+                            by: user.employee.name,
+                            created: new Date()
+                        });
                         res.status(200).send();
                     }
                 });
