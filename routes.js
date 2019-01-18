@@ -23,6 +23,7 @@ router.get('/calendar/:year/:month', cookie.Authenticate, meta.getAllDetails);
 // Profile API
 router.get('/employee', cookie.Authenticate, employee.getProfile);
 router.get('/employee/photos', cookie.Authenticate, employee.getPhotos);
+router.post('/employee', cookie.Authenticate, employee.updateEmployee);
 
 // Client API :: Allow to add clients and list
 router.post('/clients', cookie.Authenticate, client.addClient);

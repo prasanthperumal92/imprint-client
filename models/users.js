@@ -109,7 +109,10 @@ var employeeSchema = new Schema({
     reportingTo: {
         type: Schema.Types.ObjectId
     },
-    verify: verifySchema
+    verify: verifySchema,
+    doj: {
+        type: Date
+    },
 });
 
 employeeSchema.virtual('password')
@@ -356,6 +359,7 @@ employeeSchema.methods.toJSON = function () {
         creadted: this.creadted,
         modified: this.modified,
         reportingTo: this.reportingTo,
+        doj: this.doj
     }
 };
 
