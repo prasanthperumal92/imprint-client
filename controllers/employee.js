@@ -62,22 +62,6 @@ exports.updateEmployee = function (req, res, next) {
         });
     }
 
-    if (data.email) {
-        if (!common.validateEmail(data.email)) {
-            return res.status(400).send({
-                message: "Invalid Email address"
-            });
-        }
-    }
-
-    if (data.phone) {
-        if (!common.validatePhone(data.phone)) {
-            return res.status(400).send({
-                message: "Invalid Phone Number"
-            });
-        }
-    }
-
     if (data.name) {
         if (!common.validateUsername(data.name)) {
             return res.status(400).send({
@@ -97,15 +81,15 @@ exports.updateEmployee = function (req, res, next) {
                 return e._id.toString() === user.employee._id
             });
             console.log(tmp);
-            if (findEmployee(employer.employees, 'phone', data.phone)) {
+            if (data.phone && findEmployee(employer.employees, 'phone', data.phone)) {
                 return res.status(409).send({
                     message: "A User already availble with this phone number"
                 });
-            } else if (findEmployee(employer.employees, 'email', data.email)) {
+            } else if (data.email && findEmployee(employer.employees, 'email', data.email)) {
                 return res.status(409).send({
                     message: "A User already availble with this email address"
                 });
-            } else if (findEmployee(user.employees, 'name', data.name)) {
+            } else if (data.name && findEmployee(user.employees, 'name', data.name)) {
                 return res.status(409).send({
                     message: "A User already availble with this name"
                 });
