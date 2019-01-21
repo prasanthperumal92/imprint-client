@@ -125,7 +125,7 @@ exports.updateEmployee = function (req, res, next) {
                 console.log(err, updated);
                 if (err) {
                     return res.status(401).send({
-                        message: "Error updating Employee Information"
+                        message: "Error Changing Password Information"
                     });
                 } else {
                     return res.status(200).send();
@@ -197,7 +197,13 @@ exports.changePassword = function (req, res, next) {
                     runValidators: true
                 }, function (err, updated) {
                     console.log(err, updated);
-
+		     if (err) {
+			   return res.status(401).send({
+                             message: "Error Changing Password!!"
+                         });
+                     } else {
+                         return res.status(200).send();
+                     }
                 });
             }
         }
