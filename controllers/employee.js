@@ -1,6 +1,8 @@
 var User = require('../models/users');
+var Log = require('../models/log');
 const common = require('../helpers/common');
 const _ = require('lodash');
+
 
 exports.getProfile = function (req, res, next) {
     var user = req.user;
@@ -24,7 +26,16 @@ exports.getProfile = function (req, res, next) {
             delete user.username;
             delete user.active;
             delete user.modified;
-            return res.status(200).send(user);
+            Log.getFewLogs(user.employee._id, function (err, logs) {
+                if (err) {
+                    return res.status(401).send({
+                        message: "Error looking up log Information"
+                    });
+                } else {
+                    user.logs = logs || [];
+                    return res.status(200).send(user);
+                }
+            });
         }
     });
 }
@@ -131,4 +142,88 @@ exports.updateEmployee = function (req, res, next) {
 
 function findEmployee(arr, key, value) {
     return _.find(arr || [], [key, value]);
+}
+
+exports.changePassword = function (req, res, next) {
+    var user = req.user;
+    var data = req.body;
+
+    User.lookUpEmployee(user.phone, function (err, employeeData) {
+        if (err) {
+            return res.status(500).send({
+                message: "Error looking up for User"
+            });
+        } else if (employeeData) {
+            let index = 0;
+            // console.log(employeeData);
+            for (var i = 0; i < employeeData.employees.length; i++) {
+                if (employeeData.employees[i].phone === user.phone) {
+                    index = i;
+                }
+            }
+
+            if (!employeeData.employees[index].password(data.old)) {
+                // Wrong passwowrd
+                return res.status(400).send({
+                    message: "Sorry, Old Password is Wrong!!"
+                });
+            } else {
+
+                // employeeData.employees[index].password = data.new;
+                // employeeData.employees[index].modified = new Date();
+                // employeeData.save(function (err, created) {
+                //     if (err) {
+                //         return res.status(401).send({
+                //             message: "Error Logging out user!!"
+                //         });
+                //     } else {
+                //         return res.status(200).send();
+                //     }
+                // });
+
+                var _salt = common.rand(512);
+                var _password = common.sha512(data.new + _salt);
+
+                User.update({
+                    _id: user._id,
+                    'employees._id': user.employee._id
+                }, {
+                    $set: {
+                        'employees.$._salt': _salt,
+                        'employees.$._password': _password,
+                        'employees.$.modified': new Date()
+                    }
+                }, {
+                    runValidators: true
+                }, function (err, updated) {
+                    console.log(err, updated);
+
+                });
+            }
+        }
+    });
+
+}
+
+exports.logout = function (req, res, next) {
+    var user = req.user;
+
+    User.update({
+        _id: user._id,
+        'employees._id': user.employee._id
+    }, {
+        $set: {
+            'employees.$.accessToken': "",
+            'employees.$.modified': new Date()
+        }
+    }, function (err, updated) {
+        console.log(err, updated);
+        if (err) {
+            return res.status(401).send({
+                message: "Error Logging out user!!"
+            });
+        } else {
+            return res.status(200).send();
+        }
+    });
 }

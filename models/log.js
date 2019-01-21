@@ -41,4 +41,11 @@ logSchema.statics.addLog = function (obj) {
     });
 }
 
+logSchema.statics.getFewLogs = function (id, callback) {
+    this.find({
+        userId: id
+    }).sort({
+        _id: -1
+    }).skip(0).limit(20).exec(callback);
+}
 module.exports = Log = mongoose.model('Log', logSchema);
