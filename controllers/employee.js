@@ -193,17 +193,15 @@ exports.changePassword = function (req, res, next) {
                         'employees.$._password': _password,
                         'employees.$.modified': new Date()
                     }
-                }, {
-                    runValidators: true
                 }, function (err, updated) {
                     console.log(err, updated);
-		     if (err) {
-			   return res.status(401).send({
-                             message: "Error Changing Password!!"
-                         });
-                     } else {
-                         return res.status(200).send();
-                     }
+                    if (err) {
+                        return res.status(401).send({
+                            message: "Error Changing Password!!"
+                        });
+                    } else {
+                        return res.status(200).send();
+                    }
                 });
             }
         }
