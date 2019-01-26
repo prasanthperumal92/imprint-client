@@ -123,7 +123,9 @@ exports.getJob = function (req, res, next) {
     var id = req.params.id;
     let skip = req.params.skip;
 
-    if (id && (typeof skip === undefined || skip == "" || skip == null)) {
+    console.log(id, skip);
+
+    if (id && id !== 'all' && (typeof skip === undefined || skip == "" || skip == null)) {
         Job.getJobById(id, function (err, job) {
             if (err) {
                 return res.status(500).send({
@@ -133,7 +135,7 @@ exports.getJob = function (req, res, next) {
                 return res.status(200).send(job);
             }
         });
-    } else if (skip) {
+    } else if (id === 'all' && skip) {
         skip = parseInt(skip);
         if (user.type === 'employee') {
             Job.getJobs([user.employee._id], skip, function (err, jobs) {
