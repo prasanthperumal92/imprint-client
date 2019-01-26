@@ -31,12 +31,12 @@ exports.createTracks = function (req, res, next) {
 
 exports.getTracks = function (req, res, next) {
     var user = req.user;
-    var created = moment().startOf('day');
+    var created = moment().startOf('day').toDate();
     var id = req.params.id || user.employee._id;
 
-    console.log(id, user);
 
-    let createdOn = moment(new Date(req.params.date)).startOf('day') || created;
+    let createdOn = moment(new Date(req.params.date)).startOf('day').toDate() || created;
+    console.log(id, user, createdOn);
 
     Track.getTrackByUserId(id, createdOn, function (err, list) {
         if (err) {
@@ -46,7 +46,7 @@ exports.getTracks = function (req, res, next) {
             })
         } else {
             console.log(list);
-            return res.status(200).send(list);
+            return res.status(200).send(list || {});
         }
     })
 }

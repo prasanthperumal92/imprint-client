@@ -91,7 +91,7 @@ exports.getTasks = function (req, res, next) {
             'assignedTo.id': user.employee._id
         }
     }
-    console.log(query);
+    console.log("Query", query);
     Task.find(query, function (err, tasks) {
         if (err) {
             return res.status(500).send({
