@@ -209,6 +209,33 @@ exports.addReference = function (req, res, next) {
     });
 }
 
+exports.searchClient = function (req, res, next) {
+    var user = req.user;
+    var id = req.params.text;
+
+
+    Client.find({
+        "name": {
+            '$regex': id,
+            '$options': 'si'
+        }
+    }, {
+        _id: 1,
+        name: 1,
+        address: 1,
+        contact: 1,
+        person: 1
+    }, function (err, clients) {
+        if (err) {
+            return res.status(401).send({
+                message: "Error looking up Client Information"
+            });
+        } else {
+            return res.status(200).send(_.sortBy(clients, 'name'));
+        }
+    });
+}
+
 exports.clientList = function (req, res, next) {
     var user = req.user;
     var id = req.params.id;
