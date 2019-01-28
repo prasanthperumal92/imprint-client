@@ -266,16 +266,53 @@ exports.clientList = function (req, res, next) {
             }
         });
     } else {
-        Client.find({
-            clientId: id
-        }, function (err, clients) {
-            if (err) {
-                return res.status(401).send({
-                    message: "Error looking up Client Information"
-                });
-            } else {
-                return res.status(200).send(_.sortBy(clients, 'name'));
+        let query;
+        if (id.indexOf('CLIENT') > -1) {
+            query = {
+                clientId: id
             }
-        });
+        } else {
+            query = {
+                _id: id
+            }
+        }
+        Client.find(query,
+            function (err, clients) {
+                console.log(err, clients);
+                if (err) {
+                    return res.status(401).send({
+                        message: "Error looking up Client Information"
+                    });
+                } else {
+                    return res.status(200).send(_.sortBy(clients, 'name'));
+                }
+            });
     }
+}
+
+exports.getLimitedClient = function (req, res, next) {
+    var user = req.user;
+    var limit = parseInt(req.params.limit) || 10;
+    var skip = parseInt(req.params.skip) || 0;
+
+    skip = skip * limit;
+
+    Client.find({}, {
+        _id: 1,
+        name: 1,
+        address: 1,
+        contact: 1,
+        person: 1
+    }).sort({
+        'name': -1
+    }).skip(skip).limit(limit).exec(function (err, clients) {
+        console.log(err, clients);
+        if (err) {
+            return res.status(401).send({
+                message: "Error looking up Client Information"
+            });
+        } else {
+            return res.status(200).send(_.sortBy(clients, 'name'));
+        }
+    });
 }
