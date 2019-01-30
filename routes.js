@@ -9,6 +9,7 @@ const task = require('./controllers/task');
 const employee = require('./controllers/employee');
 const leave = require('./controllers/leave');
 const track = require('./controllers/track');
+const team = require('./controllers/team');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -61,5 +62,9 @@ router.post('/leaves', cookie.Authenticate, leave.getWebLeaves);
 // TRACK : API
 router.post('/track', cookie.Authenticate, track.createTracks);
 router.get('/track/:id?/:date?', cookie.Authenticate, track.getTracks);
+
+// Team : API
+router.post('/team', cookie.Authenticate, team.createTeam);
+router.get('/team', cookie.Authenticate, team.getTeams);
 
 module.exports = router;

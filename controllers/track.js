@@ -1,11 +1,10 @@
 var moment = require('moment');
 var Track = require("../models/track");
+var _ = require('lodash');
 
 exports.createTracks = function (req, res, next) {
     var user = req.user;
     var location = req.body;
-
-    console.log(location)
 
     if (!location || (location && location.length == 0)) {
         return res.status(400).send({
@@ -13,10 +12,19 @@ exports.createTracks = function (req, res, next) {
         })
     }
 
-    var today = moment().startOf('day');
+    var today = moment().startOf('day').toDate();
+    let uniq = [];
+    let tmp = [];
+    for (let i = 0; i < location.length; i++) {
+        if (tmp.indexOf(location[i].coordinates.toString()) === -1) {
+            tmp.push(location[i].coordinates.toString());
+            uniq.push(location[i]);
+        }
+    }
 
+    console.log(uniq);
 
-    Track.updateLocation(user.employee._id, today, location, function (err, track) {
+    Track.updateLocation(user.employee._id, today, uniq, function (err, track) {
         if (err) {
             console.log(err);
             return res.status(500).send({
