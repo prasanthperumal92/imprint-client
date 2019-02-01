@@ -45,3 +45,58 @@ exports.getTeams = function (req, res, next) {
         }
     });
 }
+
+exports.updateTeam = function (req, res, next) {
+    var user = req.user;
+    var team = req.body;
+
+    if (!team || (team && team.length == 0) || !team._id || !team.leaderId || team.members.length === 0) {
+        return res.status(400).send({
+            message: "No Team Data to save!"
+        })
+    }
+
+    Team.update({
+        _id: team._id
+    }, {
+        $set: {
+            name: team.name,
+            leaderId: team.leaderId,
+            modified: new Date(),
+            members: team.members
+        }
+    }, function (err, updated) {
+        if (err) {
+            console.log(err);
+            return res.status(500).send({
+                message: "Server is busy, Please try again!"
+            })
+        } else {
+            return res.status(201).send();
+        }
+    });
+};
+
+exports.deleteTeam = function (req, res, next) {
+    var user = req.user;
+    var id = req.params.id;
+
+    if (!id) {
+        return res.status(400).send({
+            message: "Cannot delete Team now!!"
+        })
+    }
+
+    Team.remove({
+        _id: id
+    }, function (err, deleted) {
+        if (err) {
+            console.log(err);
+            return res.status(500).send({
+                message: "Server is busy, Please try again!"
+            })
+        } else {
+            return res.status(201).send();
+        }
+    })
+}
