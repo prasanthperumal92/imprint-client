@@ -53,16 +53,8 @@ function saveUpdateData(user, leaveData, res) {
                 message: "Server is busy, Please try again!"
             })
         } else {
-            leaveData.approvedBy = {
-                id: employee._id,
-                name: employee.name,
-                photo: employee.photo
-            };
-            leaveData.appliedBy = {
-                id: user.employee._id,
-                name: user.employee.name,
-                photo: user.employee.photo
-            };
+            leaveData.approvedBy = employee._id;
+            leaveData.appliedBy = user.employee._id;
 
             leaveData.days = getDates(leaveData.start, leaveData.end).length;
 
@@ -132,11 +124,11 @@ exports.getLeaves = function (req, res, next) {
 
     if (user.employee.type == 'manager') {
         query = {
-            'approvedBy.id': user.employee._id
+            'approvedBy': user.employee._id
         }
     } else {
         query = {
-            'appliedBy.id': user.employee._id
+            'appliedBy': user.employee._id
         }
     }
     if (status && (status === 'Approved' || status === 'Declined')) {

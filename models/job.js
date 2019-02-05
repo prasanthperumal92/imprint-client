@@ -45,25 +45,36 @@ jobSchema.statics.getJobsDynamic = function (query, sort, order, skip, limit, ca
 }
 
 jobSchema.statics.deleteJob = function (id, callback) {
-    this.remove({_id: id}, callback);
+    this.remove({
+        _id: id
+    }, callback);
 }
 
+jobSchema.statics.getJobByEmployeeId = function (id, start, end, callback) {
+    this.find({
+        'employeeId': id,
+        'created': {
+            $gte: start,
+            $lte: end
+        }
+    }, callback);
+}
 
 jobSchema.statics.getFilters = function (callback) {
-    this.aggregate([
-        {$group: {
+    this.aggregate([{
+        $group: {
             _id: null,
-                name: {
-                    $addToSet: '$name'
-                },
-                sales: {
-                    $addToSet: '$effort.sales'
-                },
-                client: {
-                    $addToSet: '$effort.client'
-                }
-        }}
-    ], callback);
+            name: {
+                $addToSet: '$name'
+            },
+            sales: {
+                $addToSet: '$effort.sales'
+            },
+            client: {
+                $addToSet: '$effort.client'
+            }
+        }
+    }], callback);
     //this.distinct('effort.sales', 'name', 'effort.client', {}, callback);
 }
 

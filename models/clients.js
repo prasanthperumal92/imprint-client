@@ -73,8 +73,12 @@ var clientSchema = new Schema({
     person: {
         type: String
     },
-    assignedTo: assignSchema,
-    createdBy: assignSchema,
+    assignedTo: {
+        type: ObjectId
+    },
+    createdBy: {
+        type: ObjectId
+    },
     logs: [logsSchema],
     reference: [referenceSchema],
     created: {

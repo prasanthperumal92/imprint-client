@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+var ObjectId = Schema.Types.ObjectId;
 
 var assignSchema = new Schema({
     id: {
@@ -45,8 +46,12 @@ var leaveSchema = new Schema({
     comments: {
         type: String
     },
-    approvedBy: assignSchema,
-    appliedBy: assignSchema,
+    approvedBy: {
+        type: ObjectId
+    },
+    appliedBy: {
+        type: ObjectId
+    },
     description: {
         type: String
     }

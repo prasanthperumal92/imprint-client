@@ -27,8 +27,12 @@ var taskSchema = new Schema({
     due: {
         type: Date
     },
-    assignedTo: assignSchema,
-    assignedBy: assignSchema,
+    assignedTo: {
+        type: ObjectId
+    },
+    assignedBy: {
+        type: ObjectId
+    },
     created: {
         type: Date,
         required: true

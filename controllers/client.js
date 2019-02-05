@@ -49,11 +49,6 @@ exports.addClient = function (req, res, next) {
                         client.clientId = CLIENTID;
                     }
 
-                    var createdBy = {
-                        id: user.employee._id.toString(),
-                        name: user.employee.name,
-                        photo: user.employee.photo,
-                    };
                     var log = {
                         created: new Date(),
                         text: 'Created',
@@ -62,10 +57,10 @@ exports.addClient = function (req, res, next) {
                     };
 
                     if (user.employee.type !== 'manager') {
-                        client.assignedTo = createdBy;
+                        client.assignedTo = user.employee._id.toString()
                     }
 
-                    client.createdBy = createdBy;
+                    client.createdBy = user.employee._id.toString();
                     client.created = new Date();
                     client.modified = new Date();
                     client.logs = [];
@@ -117,12 +112,23 @@ exports.editClient = function (req, res, next) {
         });
     }
 
+    let original = false;
+
     Client.findByName(client.name, function (err, clients) {
         if (err) {
             return res.status(401).send({
                 message: "Error looking up Client Information"
             });
         } else if (clients.length > 0) {
+            for (let i = 0; i < clients.length; i++) {
+                if (clients[i].clientId === client.clientId) {
+                    original = true;
+                    break;
+                }
+            }
+        }
+
+        if (!original) {
             return res.status(409).send({
                 message: "Already a Client available with this name"
             });
@@ -189,22 +195,35 @@ exports.addReference = function (req, res, next) {
         $push: {
             reference: obj
         }
+    }, {
+        new: true
     }, function (err, data) {
+        console.log(data);
         if (err && !err.code === 11000) {
             return res.status(401).send({
                 message: "Error Adding Client Reference"
             });
         } else {
-            Log.addLog({
-                userId: user.employee._id,
-                clientId: user._id,
-                clientName: client.name,
-                text: 'Added Reference to the Client ' + client.name,
-                type: 'client',
-                by: user.employee.name,
-                created: new Date()
+            Client.findById(refer._id, {
+                name: 1,
+            }, function (err, client) {
+                if (err) {
+                    return res.status(401).send({
+                        message: "Error looking up Client Information"
+                    });
+                } else {
+                    Log.addLog({
+                        userId: user.employee._id,
+                        clientId: user._id,
+                        clientName: client.name,
+                        text: 'Added Reference to the Client ' + client.name,
+                        type: 'client',
+                        by: user.employee.name,
+                        created: new Date()
+                    });
+                    return res.status(200).send();
+                }
             });
-            return res.status(200).send();
         }
     });
 }
@@ -246,7 +265,7 @@ exports.clientList = function (req, res, next) {
             query = {};
         } else {
             query = {
-                'createdBy.id': user.employee._id
+                'createdBy': user.employee._id
             }
         }
 

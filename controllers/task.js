@@ -21,16 +21,8 @@ exports.createTask = function (req, res, next) {
         } else {
             taskData.modified = new Date();
             taskData.due = new Date(taskData.due);
-            taskData.assignedTo = {
-                id: employee._id,
-                name: employee.name,
-                photo: employee.photo
-            };
-            taskData.assignedBy = {
-                id: user.employee._id,
-                name: user.employee.name,
-                photo: user.employee.photo
-            };
+            taskData.assignedTo = employee._id;
+            taskData.assignedBy = user.employee._id;
 
             if (!taskData._id) {
                 taskData.created = new Date();
@@ -84,11 +76,11 @@ exports.getTasks = function (req, res, next) {
     let query = {};
     if (user.employee.type == 'manager') {
         query = {
-            'assignedBy.id': user.employee._id
+            'assignedBy': user.employee._id
         }
     } else {
         query = {
-            'assignedTo.id': user.employee._id
+            'assignedTo': user.employee._id
         }
     }
     console.log("Query", query);
@@ -145,7 +137,7 @@ exports.getWebTasks = function (req, res, next) {
     end.setHours(23, 59, 59, 999);
     if (user.employee.type == 'manager') {
         query = {
-            'assignedBy.id': user.employee._id,
+            'assignedBy': user.employee._id,
             'status': {
                 $ne: 'Removed'
             },
@@ -156,7 +148,7 @@ exports.getWebTasks = function (req, res, next) {
         }
     } else {
         query = {
-            'assignedTo.id': user.employee._id,
+            'assignedTo': user.employee._id,
             'status': {
                 $ne: 'Removed'
             },

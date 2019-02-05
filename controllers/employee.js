@@ -13,14 +13,6 @@ exports.getProfile = function (req, res, next) {
                 message: "Error looking up User Information"
             });
         } else {
-            for (let i = 0; i < data.employees.length; i++) {
-                if (data.employees[i]._id.equals(user.employee.reportingTo)) {
-                    user.employee.reportingTo = {};
-                    user.employee.reportingTo.name = data.employees[i].name;
-                    user.employee.reportingTo.photo = data.employees[i].photo;
-                    break;
-                }
-            }
             delete user.registrationId;
             delete user._id;
             delete user.username;

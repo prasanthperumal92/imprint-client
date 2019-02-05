@@ -65,8 +65,9 @@ router.get('/track/:id?/:date?', cookie.Authenticate, track.getTracks);
 
 // Team : API
 router.post('/team', cookie.Authenticate, team.createTeam);
-router.get('/team', cookie.Authenticate, team.getTeams);
+router.get('/team/:id?', cookie.Authenticate, team.getTeams);
 router.put('/team', cookie.Authenticate, team.updateTeam);
 router.delete('/team/:id', cookie.Authenticate, team.deleteTeam);
+router.get('/team/chart/:id/:start/:end', cookie.Authenticate, team.getTeamCharts);
 
 module.exports = router;
