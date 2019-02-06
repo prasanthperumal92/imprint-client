@@ -97,6 +97,19 @@ clientSchema.statics.findByName = function (name, callback) {
     }, callback);
 }
 
+clientSchema.statics.getClientByEmployeeId = function (ids, start, end, callback) {
+    console.log(start, end)
+    this.find({
+        'assignedTo': {
+            $in: ids
+        },
+        'modified': {
+            $gt: start,
+            $lt: end
+        }
+    }, callback);
+}
+
 clientSchema.statics.findLatest = function (callback) {
     this.find({}).sort({
         '_id': -1

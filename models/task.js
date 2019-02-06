@@ -48,6 +48,19 @@ var taskSchema = new Schema({
     collection: 'task'
 });
 
+taskSchema.statics.getTaskByEmployeeId = function (ids, start, end, callback) {
+    console.log(start, end)
+    this.find({
+        'assignedTo': {
+            $in: ids
+        },
+        'modified': {
+            $gt: start,
+            $lt: end
+        }
+    }, callback);
+}
+
 taskSchema.statics.getTasksDynamic = function (query, sort, order, skip, limit, callback) {
     this.find(query).sort({
         [sort]: order

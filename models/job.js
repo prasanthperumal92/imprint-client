@@ -50,12 +50,15 @@ jobSchema.statics.deleteJob = function (id, callback) {
     }, callback);
 }
 
-jobSchema.statics.getJobByEmployeeId = function (id, start, end, callback) {
+jobSchema.statics.getJobByEmployeeId = function (ids, start, end, callback) {
+    console.log(start, end)
     this.find({
-        'employeeId': id,
+        'employeeId': {
+            $in: ids
+        },
         'created': {
-            $gte: start,
-            $lte: end
+            $gt: start,
+            $lt: end
         }
     }, callback);
 }

@@ -5,6 +5,7 @@ var Task = require('../models/task');
 var Client = require('../models/clients');
 var async = require('async');
 var _ = require('lodash');
+var moment = require('moment');
 
 exports.createTeam = function (req, res, next) {
     var user = req.user;
@@ -120,8 +121,9 @@ exports.getTeamCharts = function (req, res, next) {
     var start = req.params.start;
     var end = req.params.end;
 
-    start = new Date(start);
-    end = new Date(end);
+    start = moment(start).startOf('day').toISOString();
+    // end today
+    end = moment(end).endOf('day').toISOString();
 
     console.log(req.params);
     var result = [];
@@ -134,7 +136,7 @@ exports.getTeamCharts = function (req, res, next) {
             })
         } else {
             console.log(team);
-            let teamPeopleIds = team.members.map(e => e.userId.toString());
+            let teamPeopleIds = team.members.map(e => e.userId);
             let teamPeopleData = [];
             User.findById({
                 _id: user._id
@@ -155,23 +157,50 @@ exports.getTeamCharts = function (req, res, next) {
                             });
                         }
                     }
-                    console.log(teamPeopleData);
-                    async.each(teamPeopleData, function (eachEmp, callback) {
-                        Job.getJobByEmployeeId(eachEmp._id, start, end, function (err, jobData) {
-                            if (jobData && jobData.length > 0) {
-                                let tmp = filterDataCount(jobData, eachEmp.name, 'Aterm', 'effort.sales');
-                                result = [...result, ...tmp];
-                                callback();
-                            }
-                        })
-
-                    }, function (err) {
-                        console.log(err, result);
+                    console.log(teamPeopleIds, start, end);
+                    Job.getJobByEmployeeId(teamPeopleIds, start, end, function (err, jobData) {
                         if (err) {
-                            console.log('A file failed to process');
-                        } else {
-                            console.log('All files have been processed successfully');
+                            console.log(err);
+                            return res.status(500).send({
+                                message: "Server is busy, Please try again!"
+                            })
                         }
+                        if (jobData && jobData.length > 0) {
+                            let tmp = filterDataCount(jobData, 'DSR', 'effort.sales');
+                            result = [...result, ...tmp];
+                        }
+                        console.log(result);
+                        Task.getTaskByEmployeeId(teamPeopleIds, start, end, function (err, taskData) {
+                            if (err) {
+                                console.log(err);
+                                return res.status(500).send({
+                                    message: "Server is busy, Please try again!"
+                                })
+                            }
+                            if (taskData && taskData.length > 0) {
+                                let tmp = filterDataCount(taskData, 'Task', 'status');
+                                result = [...result, ...tmp];
+                            }
+                            console.log(result);
+                            Client.getClientByEmployeeId(teamPeopleIds, start, end, function (err, clientData) {
+                                if (err) {
+                                    console.log(err);
+                                    return res.status(500).send({
+                                        message: "Server is busy, Please try again!"
+                                    })
+                                }
+                                if (clientData && clientData.length > 0) {
+                                    let tmp = filterDataCount(clientData, 'Client', 'name');
+                                    result = [...result, ...tmp];
+                                }
+                                console.log(result);
+                                return res.status(200).send({
+                                    title: team.name,
+                                    leaderId: team.leaderId,
+                                    data: result
+                                });
+                            });
+                        });
                     });
                 }
             });
@@ -179,14 +208,13 @@ exports.getTeamCharts = function (req, res, next) {
     });
 }
 
-function filterDataCount(arr, name, type, key) {
+function filterDataCount(arr, type, key) {
     var data = [];
     let split = key.split('.');
     for (let j = 0; j < arr.length; j++) {
         data.push({
-            name: name,
+            name: arr[j].employeeId || arr[j].assignedTo,
             type: type,
-            key: split.length === 0 ? arr[j][key] : arr[j][split[0]][split[1]],
             value: 1
         });
     }
