@@ -137,6 +137,7 @@ exports.getTeamCharts = function (req, res, next) {
         } else {
             console.log(team);
             let teamPeopleIds = team.members.map(e => e.userId);
+            teamPeopleIds.push(team.leaderId);
             let teamPeopleData = [];
             User.findById({
                 _id: user._id
