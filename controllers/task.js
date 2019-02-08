@@ -73,16 +73,13 @@ exports.createTask = function (req, res, next) {
 
 exports.getTasks = function (req, res, next) {
     var user = req.user;
-    let query = {};
-    if (user.employee.type == 'manager') {
-        query = {
+    let query = {
+        $or: [{
             'assignedBy': user.employee._id
-        }
-    } else {
-        query = {
+        }, {
             'assignedTo': user.employee._id
-        }
-    }
+        }]
+    };
     console.log("Query", query);
     Task.find(query, function (err, tasks) {
         if (err) {
