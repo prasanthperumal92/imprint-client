@@ -116,7 +116,7 @@ exports.getTask = function (req, res, next) {
 exports.getWebTasks = function (req, res, next) {
     var user = req.user;
     var input = req.body;
-    let query = {};
+
 
     if (!input || Object.keys(input).length === 0) {
         return res.status(400).send({
@@ -132,27 +132,18 @@ exports.getWebTasks = function (req, res, next) {
     start.setHours(0, 0, 0, 0);
     let end = new Date(input.toDate);
     end.setHours(23, 59, 59, 999);
-    if (user.employee.type == 'manager') {
-        query = {
-            'assignedBy': user.employee._id,
-            'status': {
-                $ne: 'Removed'
-            },
-            'modified': {
-                $gte: start,
-                $lte: end
-            }
-        }
-    } else {
-        query = {
-            'assignedTo': user.employee._id,
-            'status': {
-                $ne: 'Removed'
-            },
-            'modified': {
-                $gte: start,
-                $lte: end
-            }
+    let query = {
+        $or: [{
+            'assignedBy': user.employee._id
+        }, {
+            'assignedTo': user.employee._id
+        }],
+        'status': {
+            $ne: 'Removed'
+        },
+        'modified': {
+            $gte: start,
+            $lte: end
         }
     }
 
