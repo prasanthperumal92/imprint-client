@@ -13,7 +13,7 @@ var appSchema = new Schema({
     },
     image: {
         type: String
-    }    
+    }
 }, {
     _id: false
 });
@@ -24,19 +24,20 @@ var orderSchema = new Schema({
     },
     value: {
         type: String
-    }    
+    }
 }, {
     _id: false
 });
 
 var configSchema = new Schema({
     userId: {
-        type: Schema.Types.ObjectId        
+        type: Schema.Types.ObjectId
     },
     appList: [appSchema],
     leads: [orderSchema, ],
     sales: [orderSchema],
     products: [orderSchema],
+    details: [orderSchema],
     modified: {
         type: Date,
         default: new Date()
@@ -56,10 +57,10 @@ configSchema.statics.findByUserId = function (id, callback) {
 };
 
 configSchema.statics.addConfig = function (id, key, obj, callback) {
-    this.findByUserId(id, function(err, config) {
+    this.findByUserId(id, function (err, config) {
         if (err) {
             callback(err, null);
-        } else {            
+        } else {
             config[key] = obj;
             config.modified = new Date();
             config.save(callback);
@@ -68,7 +69,7 @@ configSchema.statics.addConfig = function (id, key, obj, callback) {
 };
 
 configSchema.methods.toJSON = function () {
-    return {        
+    return {
         appList: this.appList,
         leads: this.leads,
         sales: this.sales,

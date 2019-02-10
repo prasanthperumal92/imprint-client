@@ -10,6 +10,7 @@ const employee = require('./controllers/employee');
 const leave = require('./controllers/leave');
 const track = require('./controllers/track');
 const team = require('./controllers/team');
+const chart = require('./controllers/chart');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -69,5 +70,7 @@ router.get('/team/:id?', cookie.Authenticate, team.getTeams);
 router.put('/team', cookie.Authenticate, team.updateTeam);
 router.delete('/team/:id', cookie.Authenticate, team.deleteTeam);
 router.get('/team/chart/:id/:start/:end', cookie.Authenticate, team.getTeamCharts);
+
+router.get('/chart/:type/:start/:end', cookie.Authenticate, chart.getChartDateCount);
 
 module.exports = router;

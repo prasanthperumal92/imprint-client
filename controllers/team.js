@@ -167,7 +167,7 @@ exports.getTeamCharts = function (req, res, next) {
                             })
                         }
                         if (jobData && jobData.length > 0) {
-                            let tmp = filterDataCount(jobData, 'DSR', 'effort.sales');
+                            let tmp = filterDataCount(jobData, 'Aterm', 'effort.sales');
                             result = [...result, ...tmp];
                         }
                         console.log(result);
@@ -179,7 +179,7 @@ exports.getTeamCharts = function (req, res, next) {
                                 })
                             }
                             if (taskData && taskData.length > 0) {
-                                let tmp = filterDataCount(taskData, 'Task', 'status');
+                                let tmp = filterDataCount(taskData, 'Bterm', 'status');
                                 result = [...result, ...tmp];
                             }
                             console.log(result);
@@ -191,9 +191,10 @@ exports.getTeamCharts = function (req, res, next) {
                                     })
                                 }
                                 if (clientData && clientData.length > 0) {
-                                    let tmp = filterDataCount(clientData, 'Client', 'name');
+                                    let tmp = filterDataCount(clientData, 'Cterm', 'name');
                                     result = [...result, ...tmp];
                                 }
+                                result = addEmptyForNone(result, teamPeopleIds);
                                 console.log(result);
                                 return res.status(200).send({
                                     title: team.name,
@@ -208,6 +209,53 @@ exports.getTeamCharts = function (req, res, next) {
             });
         }
     });
+}
+
+function addEmptyForNone(arr, ids) {
+    for (let i = 0; i < ids.length; i++) {
+        let userData = _.filter(arr, {
+            name: ids[i]
+        });
+        console.log(userData)
+        if (userData && userData.length > 0) {
+            let types = {
+                Bterm: 0,
+                Aterm: 0,
+                Cterm: 0
+            };
+            for (let j = 0; j < userData.length; j++) {
+                types[userData[j].type]++;
+            }
+            for (let key in types) {
+                if (types[key] === 0) {
+                    arr.push({
+                        name: ids[i],
+                        type: key,
+                        value: 0
+                    });
+                }
+            }
+        } else {
+            if (userData) {
+                arr.push({
+                    name: ids[i],
+                    type: "Aterm",
+                    value: 0
+                })
+                arr.push({
+                    name: ids[i],
+                    type: "Bterm",
+                    value: 0
+                })
+                arr.push({
+                    name: ids[i],
+                    type: "Cterm",
+                    value: 0
+                })
+            }
+        }
+    }
+    return arr;
 }
 
 function filterDataCount(arr, type, key) {
