@@ -24,20 +24,20 @@ exports.getChartDateCount = function (req, res, next) {
             ],
             'modified': {
                 $gte: moment(start).startOf('day').toISOString(),
-                $lte: moment(end).startOf('day').toISOString(),
+                $lte: moment(end).endOf('day').toISOString(),
             }
         },
         job: {
             'created': {
                 $gte: moment(start).startOf('day').toISOString(),
-                $lte: moment(end).startOf('day').toISOString(),
+                $lte: moment(end).endOf('day').toISOString(),
             },
             'employeeId': user.employee._id
         },
         client: {
             'modified': {
                 $gte: moment(start).startOf('day').toISOString(),
-                $lte: moment(end).startOf('day').toISOString(),
+                $lte: moment(end).endOf('day').toISOString(),
             },
             'assignedTo': user.employee._id
         }
