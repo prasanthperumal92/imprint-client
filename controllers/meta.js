@@ -87,7 +87,14 @@ exports.getAllDetails = function (req, res, next) {
                         $ne: 'Declined'
                     };
                     console.log(query);
-                    Leave.find(query, function (err, leaves) {
+                    Leave.find({
+                        start: {
+                            $gte: start
+                        },
+                        end: {
+                            $lte: end
+                        }
+                    }, function (err, leaves) {
                         console.log(err, leaves);
                         if (err) {
                             return res.status(500).send({
