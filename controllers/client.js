@@ -265,7 +265,13 @@ exports.clientList = function (req, res, next) {
             query = {};
         } else {
             query = {
-                'createdBy': user.employee._id
+                $or: [{
+                        'createdBy': user.employee._id
+                    },
+                    {
+                        'assignedTo': user.employee._id
+                    }
+                ]
             }
         }
 
