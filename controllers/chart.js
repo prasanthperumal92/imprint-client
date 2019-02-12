@@ -72,7 +72,7 @@ exports.getChartDateCount = function (req, res, next) {
             });
         },
         client: function (callback) {
-            Team.find(query.client, function (err, clients) {
+            Client.find(query.client, function (err, clients) {
                 if (err) {
                     console.log(err);
                     clients = [];
@@ -81,6 +81,7 @@ exports.getChartDateCount = function (req, res, next) {
             });
         }
     }, function (err, results) {
+        console.log(query);
         console.log(results);
         return res.status(200).send([{
                 key: 'Aterm',
