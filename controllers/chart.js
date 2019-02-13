@@ -245,7 +245,8 @@ exports.getDataDownload = function (req, res, next) {
                                     return res.status(200).send({
                                         title: team.name,
                                         leaderId: team.leaderId,
-                                        data: result
+                                        data: result,
+                                        members: team.members
                                     });
                                 });
                             });
