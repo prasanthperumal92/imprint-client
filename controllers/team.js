@@ -197,6 +197,7 @@ exports.getTeamCharts = function (req, res, next) {
                                 result = addEmptyForNone(result, teamPeopleIds);
                                 console.log(result);
                                 return res.status(200).send({
+                                    id: team._id,
                                     title: team.name,
                                     leaderId: team.leaderId,
                                     data: result,
