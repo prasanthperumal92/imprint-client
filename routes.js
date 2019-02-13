@@ -72,5 +72,6 @@ router.delete('/team/:id', cookie.Authenticate, team.deleteTeam);
 router.get('/team/chart/:id/:start/:end', cookie.Authenticate, team.getTeamCharts);
 
 router.get('/chart/:type/:start/:end', cookie.Authenticate, chart.getChartDateCount);
+router.get('/download/:type/:start/:end/:id?', cookie.Authenticate, chart.getDataDownload);
 
 module.exports = router;
