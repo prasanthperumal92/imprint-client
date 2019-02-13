@@ -91,6 +91,20 @@ exports.getChartDateCount = function (req, res, next) {
 
 }
 
+function flattenJob(arr) {
+    let data = [];
+    for (let i = 0; i < arr.length; i++) {
+        let item = arr[i];
+        let tmp = item.effort;
+        for (let key in tmp) {
+            item[key] = tmp[key];
+        }
+        item.effort = undefined;
+        data.push(item);
+    }
+    return data;
+}
+
 exports.getDataDownload = function (req, res, next) {
     var user = req.user;
     var type = req.params.type;
@@ -136,6 +150,8 @@ exports.getDataDownload = function (req, res, next) {
                         console.log(err);
                         jobs = [];
                     }
+                    let temp = JSON.parse(JSON.stringify(jobs));
+                    jobs = flattenJob(temp);
                     callback(null, jobs);
                 });
             },
@@ -206,8 +222,8 @@ exports.getDataDownload = function (req, res, next) {
                                     message: "Server is busy, Please try again!"
                                 })
                             }
-                            result.job = jobData;
-                            console.log(result);
+                            let temp = JSON.parse(JSON.stringify(jobData));
+                            result.job = flattenJob(temp);
                             Task.getTaskByEmployeeId(teamPeopleIds, start, end, function (err, taskData) {
                                 if (err) {
                                     console.log(err);
