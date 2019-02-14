@@ -73,5 +73,6 @@ router.get('/team/chart/:id/:start/:end', cookie.Authenticate, team.getTeamChart
 
 router.get('/chart/:type/:start/:end', cookie.Authenticate, chart.getChartDateCount);
 router.get('/download/:type/:start/:end/:id?', cookie.Authenticate, chart.getDataDownload);
+router.get('/lead/status/:start/:end', cookie.Authenticate, chart.getLeadStatus);
 
 module.exports = router;

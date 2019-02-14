@@ -56,10 +56,6 @@ exports.addClient = function (req, res, next) {
                         by: user.employee.name
                     };
 
-                    if (user.employee.type !== 'manager') {
-                        client.assignedTo = user.employee._id.toString()
-                    }
-
                     client.createdBy = user.employee._id.toString();
                     client.created = new Date();
                     client.modified = new Date();
