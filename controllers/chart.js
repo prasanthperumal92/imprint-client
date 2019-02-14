@@ -258,56 +258,96 @@ exports.getDataDownload = function (req, res, next) {
     }
 }
 
+function getLeadQuery(user, start, end, cb) {
+    let query = {};
+    if (user.employee.type === "manager") {
+        User.findById(user._id, function (err, userData) {
+            if (err) {
+                console.log(err);
+                cb(err, null);
+            } else {
+                let emps = [];
+                var employee = userData.toJSON();
+                for (var i = 0; i < userData.employees.length; i++) {
+                    if (userData.employees[i].reportingTo.equals(user.employee._id)) {
+                        emps.push(userData.employees[i]._id);
+                    }
+                }
+                query = {
+                    'created': {
+                        $gte: moment(start).startOf('day').toISOString(),
+                        $lte: moment(end).endOf('day').toISOString(),
+                    },
+                    'employeeId': {
+                        $in: emps
+                    }
+                }
+                cb(null, query);
+            }
+        });
+    } else {
+        query = {
+            'created': {
+                $gte: moment(start).startOf('day').toISOString(),
+                $lte: moment(end).endOf('day').toISOString(),
+            },
+            'employeeId': user.employee._id
+        }
+        cb(null, query);
+    }
+}
+
 exports.getLeadStatus = function (req, res, next) {
     var user = req.user;
     var start = req.params.start;
     var end = req.params.end;
 
-    let query = {
-        'created': {
-            $gte: moment(start).startOf('day').toISOString(),
-            $lte: moment(end).endOf('day').toISOString(),
-        },
-        'employeeId': user.employee._id
-    }
-
-    let result = [];
-    let data = {
-        hot: 0,
-        warm: 0,
-        cold: 0
-    };
-
-    Job.find(query, function (err, jobs) {
+    getLeadQuery(user, start, end, function (err, query) {
         if (err) {
             console.log(err);
             return res.status(500).send({
                 message: "Server is busy, Please try again!"
             })
         } else {
-            for (let i = 0; i < jobs.length; i++) {
-                if (jobs[i].effort.sales === "Introduction") {
-                    data.cold++;
-                } else if (jobs[i].effort.sales === "Followup" || jobs[i].effort.sales === "Proposal") {
-                    data.warm++;
-                } else if (jobs[i].effort.sales === "Demo") {
-                    data.hot++;
+            let result = [];
+            let data = {
+                hot: 0,
+                warm: 0,
+                cold: 0
+            };
+
+            Job.find(query, function (err, jobs) {
+                if (err) {
+                    console.log(err);
+                    return res.status(500).send({
+                        message: "Server is busy, Please try again!"
+                    })
+                } else {
+                    for (let i = 0; i < jobs.length; i++) {
+                        if (jobs[i].effort.sales === "Introduction") {
+                            data.cold++;
+                        } else if (jobs[i].effort.sales === "Followup" || jobs[i].effort.sales === "Proposal") {
+                            data.warm++;
+                        } else if (jobs[i].effort.sales === "Demo") {
+                            data.hot++;
+                        }
+                    }
+                    result = [{
+                            key: "Aterm",
+                            value: data.hot
+                        },
+                        {
+                            key: "Bterm",
+                            value: data.warm
+                        },
+                        {
+                            key: "Cterm",
+                            value: data.cold
+                        }
+                    ]
+                    return res.status(200).send(result);
                 }
-            }
-            result = [{
-                    key: "Aterm",
-                    value: data.hot
-                },
-                {
-                    key: "Bterm",
-                    value: data.warm
-                },
-                {
-                    key: "Cterm",
-                    value: data.cold
-                }
-            ]
-            return res.status(200).send(result);
+            })
         }
-    })
+    });
 }
