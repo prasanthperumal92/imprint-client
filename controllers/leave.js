@@ -2,6 +2,7 @@ var Leave = require('../models/leaves');
 var moment = require('moment');
 var _ = require('lodash');
 var Log = require('../models/log');
+var Notification = require('./notifications');
 
 exports.createLeave = function (req, res, next) {
     var user = req.user;
@@ -77,6 +78,8 @@ function saveUpdateData(user, leaveData, res) {
                         by: user.employee.name,
                         created: new Date()
                     });
+                    let text = user.employee.name + " has Applied " + leaveData.type;
+                    Notification.addNotification(user.employee.reportingTo, 'attendance', text);
                     res.status(200).send();
                 }
             })
@@ -97,7 +100,9 @@ exports.updateLeave = function (req, res, next) {
 
     leaveData.modified = new Date();
 
-    Leave.findByIdAndUpdate(leaveData._id, leaveData, function (err) {
+    Leave.findByIdAndUpdate(leaveData._id, leaveData, {
+        new: true
+    }, function (err, newLeaveData) {
         if (err) {
             console.log(err);
             return res.status(500).send({
@@ -112,6 +117,8 @@ exports.updateLeave = function (req, res, next) {
                 by: user.employee.name,
                 created: new Date()
             });
+            let text = user.employee.name + " has " + leaveData.status + " Your Leave Request";
+            Notification.addNotification(newLeaveData.appliedBy, 'attendance', text);
             res.status(200).send();
         }
     });

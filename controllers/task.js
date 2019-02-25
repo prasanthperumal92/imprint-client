@@ -1,6 +1,7 @@
 var User = require('../models/users');
 var Task = require('../models/task');
 var Log = require('../models/log');
+var Notification = require('./notifications');
 
 exports.createTask = function (req, res, next) {
     var user = req.user;
@@ -21,10 +22,10 @@ exports.createTask = function (req, res, next) {
         } else {
             taskData.modified = new Date();
             taskData.due = new Date(taskData.due);
-            taskData.assignedTo = employee._id;
-            taskData.assignedBy = user.employee._id;
 
             if (!taskData._id) {
+                taskData.assignedTo = employee._id;
+                taskData.assignedBy = user.employee._id;
                 taskData.created = new Date();
                 taskData.status = "New";
                 var data = new Task(taskData);
@@ -44,11 +45,15 @@ exports.createTask = function (req, res, next) {
                             by: user.employee.name,
                             created: new Date()
                         });
+                        let text = user.employee.name + " has assigned a Task to You";
+                        Notification.addNotification(taskData.assignedTo, 'task', text);
                         res.status(200).send();
                     }
                 })
             } else {
-                Task.findByIdAndUpdate(taskData._id, taskData, function (err) {
+                Task.findByIdAndUpdate(taskData._id, taskData, {
+                    new: true
+                }, function (err, newData) {
                     if (err) {
                         console.log(err);
                         return res.status(500).send({
@@ -63,6 +68,17 @@ exports.createTask = function (req, res, next) {
                             by: user.employee.name,
                             created: new Date()
                         });
+                        let text, idee;
+                        if (newData.assignedBy.equals(user.employee._id)) {
+                            // Manager
+                            text = user.employee.name + " has updated the task assigned to You";
+                            idee = newData.assignedTo;
+                        } else {
+                            // Employee
+                            text = user.employee.name + " has updated the task assigned by You";
+                            idee = newData.assignedBy;
+                        }
+                        Notification.addNotification(idee, 'task', text);
                         res.status(200).send();
                     }
                 });

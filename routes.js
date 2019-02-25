@@ -11,6 +11,7 @@ const leave = require('./controllers/leave');
 const track = require('./controllers/track');
 const team = require('./controllers/team');
 const chart = require('./controllers/chart');
+const notification = require('./controllers/notifications');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -74,5 +75,10 @@ router.get('/team/chart/:id/:start/:end', cookie.Authenticate, team.getTeamChart
 router.get('/chart/:type/:start/:end', cookie.Authenticate, chart.getChartDateCount);
 router.get('/download/:type/:start/:end/:id?', cookie.Authenticate, chart.getDataDownload);
 router.get('/lead/status/:start/:end', cookie.Authenticate, chart.getLeadStatus);
+
+
+// Notifications
+router.get('/notification', cookie.Authenticate, notification.getUnReads);
+router.put('/notification/:id', cookie.Authenticate, notification.updateNotification);
 
 module.exports = router;
