@@ -59,42 +59,78 @@ exports.getAllDetails = function (req, res, next) {
     var start = moment(tmp).startOf('month').format('YYYY-MM-DD[T]HH:mm:ss');
     var end = moment(tmp).endOf('month').format('YYYY-MM-DD[T]HH:mm:ss');
     console.log(tmp, start, end);
+    var jobQuery = {},
+        taskQuery = {},
+        leaveQuery = {};
+    if (user.employee.type === "Manager") {
+        jobQuery = taskQuery = {
+            created: {
+                $gte: start,
+                $lte: end
+            }
+        };
+        leaveQuery = {
+            approvedBy: user.employee._id,
+            start: {
+                $gte: start
+            },
+            end: {
+                $lte: end
+            },
+            status: {
+                $ne: 'Declined'
+            }
+        };
+    } else {
+        jobQuery = {
+            employeeId: user.employee._id,
+            created: {
+                $gte: start,
+                $lte: end
+            }
+        };
 
-    var query = {
-        created: {
-            $gte: start,
-            $lte: end
-        }
-    };
+        taskQuery = {
+            $or: [{
+                'assignedBy': user.employee._id
+            }, {
+                'assignedTo': user.employee._id
+            }],
+            modified: {
+                $gte: start,
+                $lte: end
+            }
+        };
 
-    console.log(query);
+        leaveQuery = {
+            appliedBy: user.employee._id,
+            start: {
+                $gte: start
+            },
+            end: {
+                $lte: end
+            },
+            status: {
+                $ne: 'Declined'
+            }
+        };
+    }
 
-    Job.find(query, '_id created name effort', function (err, jobs) {
+    Job.find(jobQuery, '_id created name effort', function (err, jobs) {
         console.log(err, jobs);
         if (err) {
             return res.status(500).send({
                 message: "Error looking up DSR Data!!!"
             });
         } else {
-            Task.find(query, function (err, tasks) {
+            Task.find(taskQuery, function (err, tasks) {
                 console.log(err, tasks);
                 if (err) {
                     return res.status(500).send({
                         message: "Error looking up Task Data!!!"
                     });
                 } else {
-                    query.status = {
-                        $ne: 'Declined'
-                    };
-                    console.log(query);
-                    Leave.find({
-                        start: {
-                            $gte: start
-                        },
-                        end: {
-                            $lte: end
-                        }
-                    }, function (err, leaves) {
+                    Leave.find(leaveQuery, function (err, leaves) {
                         console.log(err, leaves);
                         if (err) {
                             return res.status(500).send({
