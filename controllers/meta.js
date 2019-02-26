@@ -62,15 +62,20 @@ exports.getAllDetails = function (req, res, next) {
     var jobQuery = {},
         taskQuery = {},
         leaveQuery = {};
-    if (user.employee.type === "Manager") {
-        jobQuery = taskQuery = {
+    if (user.employee.type === "manager") {
+        jobQuery = {
             created: {
                 $gte: start,
                 $lte: end
             }
         };
+        taskQuery = {
+            modified: {
+                $gte: start,
+                $lte: end
+            }
+        };
         leaveQuery = {
-            approvedBy: user.employee._id,
             start: {
                 $gte: start
             },
