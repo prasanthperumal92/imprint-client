@@ -47,7 +47,7 @@ exports.updateNotification = function (req, res, next) {
     }
 
     Notification.findOneAndUpdate({
-        employeeId: user.employee._id
+        _id: id
     }, {
         isRead: true
     }, function (err, doc) {
