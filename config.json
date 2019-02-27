@@ -1,7 +1,7 @@
 {
     "appName": "Imprint",
-    "appUrl": "https://imp-web.herokuapp.com/",
-    "leavePage": "https://imp-web.herokuapp.com/dashboard/attendance",
+    "appUrl": "http://imp-web.herokuapp.com/",
+    "leavePage": "http://imp-web.herokuapp.com/dashboard/attendance",
     "clientCodeRange": "IM2018PRINT100",
     "cloudinary": {
         "name": "hlmzh75cl",
