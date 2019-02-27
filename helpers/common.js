@@ -1,5 +1,6 @@
 var crypto = require('crypto');
 var validator = require("validator");
+var config = require("../config.json");
 
 function md5(str) {
     return crypto.createHash('md5').update(str).digest('hex').toString();
@@ -26,7 +27,7 @@ function generateOTPKey() {
 exports.generateOTPKey = generateOTPKey;
 
 function registration() {
-    return "IM2018PRINT100" + Math.floor(100000 + Math.random() * 900000);
+    return config.clientCodeRange + Math.floor(100000 + Math.random() * 900000);
 };
 exports.registration = registration;
 
@@ -35,12 +36,12 @@ function validatePhone(phone) {
 }
 exports.validatePhone = validatePhone;
 
-function validateEmail(email){
+function validateEmail(email) {
     return validator.isEmail(email);
 }
 exports.validateEmail = validateEmail;
 
-function validateUsername(name){
+function validateUsername(name) {
     return name && (name.length >= 3 && name.length <= 64);
 }
 exports.validateUsername = validateUsername;
@@ -49,3 +50,19 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 exports.capitalizeFirstLetter = capitalizeFirstLetter;
+
+exports.getMailCredentials = function () {
+    return {
+        mail: config.mail.mail,
+        sender: config.mail.sender,
+        clientID: config.mail.clientID,
+        secret: config.mail.secret,
+        accessToken: config.mail.accessToken,
+        refreshToken: config.mail.refreshToken,
+        authorizedCode: config.mail.authorizedCode
+    }
+}
+
+exports.getLeavePage = function () {
+    return config.leavePage;
+}

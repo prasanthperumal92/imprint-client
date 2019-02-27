@@ -1,0 +1,19 @@
+{
+    "appName": "Imprint",
+    "appUrl": "https://imp-web.herokuapp.com/",
+    "leavePage": "https://imp-web.herokuapp.com/dashboard/attendance",
+    "clientCodeRange": "IM2018PRINT100",
+    "cloudinary": {
+        "name": "hlmzh75cl",
+        "preset": "ij5cs5za"
+    },
+    "mail": {
+        "mail": "myimprint.in@gmail.com",
+        "sender": "Imprint Mailer <myimprint.in@gmail.com>",
+        "clientID": "648015582215-oqa6ohd212vdkabo71nib2u8apes4vo8.apps.googleusercontent.com",
+        "secret": "EnnNZK7VBqwIxHN06DjtLRgZ",
+        "accessToken": "ya29.Glu9BiwH7azRSl4gTaG9bx50EGRJupcC1U60oUpZuqMU4EdYSMf0Z9YvZMKQ8a43-Wulpe3K4AOLzZgkD5LxR33aftZtI3CQi1A2sioK5A--Hn3pcO5XPIfdJciP",
+        "refreshToken": "1/8BN817HlI22vNMJCFEmEbB4WyZdEk238Xv-nn6VDzNS1Bp259itm958ITeOwpA3B",
+        "authorizedCode": "4/_gD_LckIyqERm5H1mw65bUXZRox5-IXKGYnMvgvyPELi2ty-iGArp24N5hA-JtAJwpYPU9K5IEN9dAS6vrm7Qa0"
+    }
+}

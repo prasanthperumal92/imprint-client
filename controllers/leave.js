@@ -3,6 +3,7 @@ var moment = require('moment');
 var _ = require('lodash');
 var Log = require('../models/log');
 var Notification = require('./notifications');
+var common = require("../helpers/common");
 
 exports.createLeave = function (req, res, next) {
     var user = req.user;
@@ -80,6 +81,18 @@ function saveUpdateData(user, leaveData, res) {
                     });
                     let text = user.employee.name + " has Applied " + leaveData.type;
                     Notification.addNotification(user.employee.reportingTo, 'attendance', text);
+                    let obj = {
+                        to: employee.email,
+                        subject: "Leave Applied - " + user.employee.name,
+                        body: `<p>Hi ${employee.name}, </p>
+                            <p>${user.employee.name} has Applied ${leaveData.type} from ${moment(leaveData.start).format('YYYY-MM-DD')} to 
+                            ${moment(leaveData.end).format('YYYY-MM-DD')}. Click <a href="${common.getLeavePage()}">here</a> to know more..</p>
+                            <div>Regards</div>
+                            <div>Imprint</div>
+                            <br>
+                            <p>*** This is an automatically generated email, please do not reply to this message ***</p>`
+                    };
+                    Notification.sendMail(obj);
                     res.status(200).send();
                 }
             })
@@ -120,6 +133,24 @@ exports.updateLeave = function (req, res, next) {
             let text = user.employee.name + " has " + leaveData.status + " Your Leave Request";
             Notification.addNotification(newLeaveData.appliedBy, 'attendance', text);
             res.status(200).send();
+            User.findEmployeeById(newLeaveData.appliedBy, function (err, employee) {
+                if (err || !employee) {
+                    console.log("Cannot trigger email", err, employee);
+                } else {
+                    let obj = {
+                        to: employee.email,
+                        subject: "Leave " + leaveData.status,
+                        body: `<p>Hi ${employee.name}, </p>
+                        <p>${user.employee.name} has ${newLeaveData.status} Your  ${newLeaveData.type} from ${moment(newLeaveData.start).format('YYYY-MM-DD')} to 
+                        ${moment(newLeaveData.end).format('YYYY-MM-DD')}. Click <a href="${common.getLeavePage()}">here</a> to know more..</p>
+                        <div>Regards</div>
+                        <div>Imprint</div>
+                        <br>
+                        <p>*** This is an automatically generated email, please do not reply to this message ***</p>`
+                    };
+                    Notification.sendMail(obj);
+                }
+            });
         }
     });
 }
@@ -185,7 +216,7 @@ exports.getWebLeaves = function (req, res, next) {
     end.setHours(23, 59, 59, 999);
     if (user.employee.type == 'manager') {
         query = {
-            'approvedBy.id': user.employee._id,
+            'approvedBy': user.employee._id,
             'created': {
                 $gte: start,
                 $lte: end
@@ -193,7 +224,7 @@ exports.getWebLeaves = function (req, res, next) {
         }
     } else {
         query = {
-            'appliedBy.id': user.employee._id,
+            'appliedBy': user.employee._id,
             'created': {
                 $gte: start,
                 $lte: end

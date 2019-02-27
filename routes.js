@@ -76,9 +76,12 @@ router.get('/chart/:type/:start/:end', cookie.Authenticate, chart.getChartDateCo
 router.get('/download/:type/:start/:end/:id?', cookie.Authenticate, chart.getDataDownload);
 router.get('/lead/status/:start/:end', cookie.Authenticate, chart.getLeadStatus);
 
-
 // Notifications
 router.get('/notification', cookie.Authenticate, notification.getUnReads);
 router.put('/notification/:id', cookie.Authenticate, notification.updateNotification);
+
+// Mail Tester
+router.get('/mail', notification.sendTestMail);
+router.get('/mail/:email', notification.sendTestMail);
 
 module.exports = router;

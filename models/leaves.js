@@ -61,7 +61,7 @@ var leaveSchema = new Schema({
 
 leaveSchema.statics.checkExistingLeaves = function (id, callback) {
     this.find({
-        'appliedBy.id': id,
+        'appliedBy': id,
         'status': {
             $ne: 'Declined'
         }
