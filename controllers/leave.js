@@ -35,7 +35,7 @@ exports.createLeave = function (req, res, next) {
             console.log('Current Leaves', currentLeaves);
             let isApplied = _.intersection(days, currentLeaves);
             if (isApplied.length > 0) {
-                return res.status(500).send({
+                return res.status(400).send({
                     message: "You have already applied leave on this date"
                 });
             } else {
