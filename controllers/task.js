@@ -15,7 +15,6 @@ exports.createTask = function (req, res, next) {
             })
         } else {
             taskData.modified = new Date();
-            taskData.due = new Date(taskData.due);
             if (!taskData._id) {
 
                 if (Object.keys(taskData).length == 0 || !taskData.title || !taskData.due || !taskData.assignedTo || !taskData.status) {
@@ -26,6 +25,7 @@ exports.createTask = function (req, res, next) {
 
                 taskData.assignedTo = employee._id;
                 taskData.assignedBy = user.employee._id;
+                taskData.due = new Date(taskData.due);
                 taskData.created = new Date();
                 taskData.status = "New";
 
