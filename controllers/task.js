@@ -22,12 +22,23 @@ exports.createTask = function (req, res, next) {
         } else {
             taskData.modified = new Date();
             taskData.due = new Date(taskData.due);
-
             if (!taskData._id) {
                 taskData.assignedTo = employee._id;
                 taskData.assignedBy = user.employee._id;
                 taskData.created = new Date();
                 taskData.status = "New";
+
+                if (taskData.comment) {
+                    taskData.comments = [{
+                        comment: taskData.comment,
+                        name: user.employee.name,
+                        id: user.employee._id,
+                        created: new Date()
+                    }];
+                }
+
+                console.log(taskData);
+
                 var data = new Task(taskData);
 
                 data.save(function (err) {
@@ -49,9 +60,28 @@ exports.createTask = function (req, res, next) {
                         Notification.addNotification(taskData.assignedTo, 'task', text);
                         res.status(200).send();
                     }
-                })
+                });
             } else {
-                Task.findByIdAndUpdate(taskData._id, taskData, {
+                let tmp = taskData;
+                if (taskData.comment) {
+                    let comment = {
+                        comment: taskData.comment
+                    };
+                    comment.name = user.employee.name;
+                    comment.id = user.employee._id;
+                    comment.created = new Date();
+                    delete taskData.comment;
+                    tmp = {
+                        $set: taskData,
+                        $push: {
+                            comments: comment
+                        }
+                    };
+                }
+                console.log(tmp);
+                Task.findOneAndUpdate({
+                    _id: taskData._id
+                }, tmp, {
                     new: true
                 }, function (err, newData) {
                     if (err) {

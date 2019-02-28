@@ -43,7 +43,13 @@ var taskSchema = new Schema({
     status: {
         type: String,
         enum: ['New', 'Progress', 'Done', 'Completed', 'Removed']
-    }
+    },
+    comments: [{
+        comment: String,
+        name: String,
+        id: ObjectId,
+        created: Date
+    }]
 }, {
     collection: 'task'
 });
