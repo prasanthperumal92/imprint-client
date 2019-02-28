@@ -7,12 +7,6 @@ exports.createTask = function (req, res, next) {
     var user = req.user;
     var taskData = req.body;
 
-    if (Object.keys(taskData).length == 0 || !taskData.title || !taskData.due || !taskData.assignedTo || !taskData.status) {
-        return res.status(400).send({
-            message: "Invalid Data"
-        });
-    }
-
     User.findEmployeeById(taskData.assignedTo, function (err, employee) {
         if (err) {
             console.log(err);
@@ -23,6 +17,13 @@ exports.createTask = function (req, res, next) {
             taskData.modified = new Date();
             taskData.due = new Date(taskData.due);
             if (!taskData._id) {
+
+                if (Object.keys(taskData).length == 0 || !taskData.title || !taskData.due || !taskData.assignedTo || !taskData.status) {
+                    return res.status(400).send({
+                        message: "Invalid Data"
+                    });
+                }
+
                 taskData.assignedTo = employee._id;
                 taskData.assignedBy = user.employee._id;
                 taskData.created = new Date();
@@ -62,6 +63,14 @@ exports.createTask = function (req, res, next) {
                     }
                 });
             } else {
+
+                if (Object.keys(taskData).length == 0 || !taskData.assignedTo || !taskData.status) {
+                    return res.status(400).send({
+                        message: "Invalid Data"
+                    });
+                }
+
+                taskData.assignedTo = employee._id;
                 let tmp = taskData;
                 if (taskData.comment) {
                     let comment = {
