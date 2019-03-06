@@ -169,7 +169,7 @@ exports.getCloudinary = function (req, res, next) {
         apiSecret: secret,
         httpUrl: `http://res.cloudinary.com/${cloudName}/image/upload`,
         httpsUrl: `http://res.cloudinary.com/${cloudName}/image/upload`,
-        uploadUrl: `http://api.cloudinary.com/${cloudName}/image/upload`,
+        uploadUrl: `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
         tags: 'imprint_album',
         folder: 'imprint',
         preset: "ij5cs5za"
