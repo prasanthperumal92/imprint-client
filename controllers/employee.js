@@ -161,18 +161,6 @@ exports.changePassword = function (req, res, next) {
                 });
             } else {
 
-                // employeeData.employees[index].password = data.new;
-                // employeeData.employees[index].modified = new Date();
-                // employeeData.save(function (err, created) {
-                //     if (err) {
-                //         return res.status(401).send({
-                //             message: "Error Logging out user!!"
-                //         });
-                //     } else {
-                //         return res.status(200).send();
-                //     }
-                // });
-
                 var _salt = common.rand(512);
                 var _password = common.sha512(data.new + _salt);
 
@@ -209,7 +197,6 @@ exports.logout = function (req, res, next) {
         'employees._id': user.employee._id
     }, {
         $set: {
-            'employees.$.accessToken': "",
             'employees.$.modified': new Date()
         }
     }, function (err, updated) {
