@@ -4,6 +4,8 @@ var Client = require('../models/clients');
 var Log = require('../models/log');
 var ObjectId = require("mongoose").Schema.Types.ObjectId;
 var moment = require('moment');
+var request = require('request');
+var config = require('../config.json');
 
 exports.createJob = function (req, res, next) {
     var user = req.user;
@@ -21,43 +23,67 @@ exports.createJob = function (req, res, next) {
         });
     }
 
-    effort.employeeId = user.employee._id;
-    effort.name = user.employee.name;
-    effort.created = new Date();
-    effort = new Job(effort);
-    effort.save(function (err) {
-        if (err) {
-            return res.status(500).send({
-                message: "Error Creating Job"
-            });
-        } else {
-            Client.update({
-                _id: effort.clientId
-            }, {
-                modified: new Date(),
-                $push: {
-                    logs: {
-                        created: new Date(),
-                        text: 'Created',
-                        type: 'DSR',
-                        by: effort.name
-                    }
-                }
-            }, function (err, result) {
-                console.log(err, result);
-                Log.addLog({
-                    userId: user.employee._id,
-                    clientId: user._id,
-                    clientName: effort.client,
-                    text: 'Created an DSR for client ' + effort.client,
-                    type: 'dsr',
-                    by: user.employee.name,
-                    created: new Date()
-                });
-                return res.status(201).send();
-            });
+    if (!effort.effort.coordinates) {
+        return res.status(400).send({
+            message: "Coordinates is missing"
+        });
+    }
+
+    var url = config.maps.url + effort.effort.coordinates[0] + "," + effort.effort.coordinates[1] + "&key=" + process.env.GOOGLE_API_KEY;
+    console.log(url);
+    request(url, function (error, response, body) {
+        console.log("Mapps Error", error);
+        try {
+            body = JSON.parse(body);
+            console.log(body.status);
+            if (body && body.status === "OK") {
+                effort.effort.address = body.results[0].formatted_address.toString();
+                effort.effort.address = effort.effort.address.replace("Unnamed Road,", "");
+            }
+        } catch (e) {
+            console.log(e);
         }
+        effort.employeeId = user.employee._id;
+        effort.name = user.employee.name;
+        effort.created = new Date();
+        effort = new Job(effort);
+        console.log("Add DSR", effort);
+        effort.save(function (err) {
+            if (err) {
+                return res.status(500).send({
+                    message: "Error Creating Job"
+                });
+            } else {
+                Client.update({
+                    _id: effort.clientId
+                }, {
+                    modified: new Date(),
+                    $push: {
+                        logs: {
+                            created: new Date(),
+                            text: 'Created',
+                            type: 'DSR',
+                            by: effort.name
+                        }
+                    }
+                }, function (err, result) {
+                    console.log(err, result);
+                    Log.addLog({
+                        userId: user.employee._id,
+                        clientId: user._id,
+                        clientName: effort.client,
+                        text: 'Created an DSR for client ' + effort.client,
+                        type: 'dsr',
+                        by: user.employee.name,
+                        created: new Date()
+                    });
+                    return res.status(201).send();
+                });
+            }
+        });
     });
+
+
 }
 
 exports.getJobForShare = function (req, res, next) {

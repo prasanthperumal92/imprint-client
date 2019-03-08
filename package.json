@@ -20,6 +20,7 @@
     "mongoose": "5.3.11",
     "morgan": "~1.9.0",
     "nodemailer": "5.1.1",
+    "request": "2.88.0",
     "validator": "10.9.0"
   }
 }

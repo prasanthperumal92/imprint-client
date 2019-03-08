@@ -492,11 +492,7 @@ exports.getLeadStatus = function (req, res, next) {
                 }
 
                 let result = [];
-                let data = {
-                    hot: 0,
-                    warm: 0,
-                    cold: 0
-                };
+                let data = {};
 
                 Job.find(query, function (err, jobs) {
                     if (err) {
@@ -505,28 +501,21 @@ exports.getLeadStatus = function (req, res, next) {
                             message: "Server is busy, Please try again!"
                         })
                     } else {
+                        console.log(jobs);
                         for (let i = 0; i < jobs.length; i++) {
-                            if (jobs[i].effort.sales === "Introduction") {
-                                data.cold++;
-                            } else if (jobs[i].effort.sales === "Followup" || jobs[i].effort.sales === "Proposal") {
-                                data.warm++;
-                            } else if (jobs[i].effort.sales === "Demo") {
-                                data.hot++;
+                            let key = jobs[i].effort.lead;
+                            if (key) {
+                                data[key] ? data[key]++ : data[key] = 1;
                             }
                         }
-                        result = [{
-                                key: "Aterm",
-                                value: data.hot
-                            },
-                            {
-                                key: "Bterm",
-                                value: data.warm
-                            },
-                            {
-                                key: "Cterm",
-                                value: data.cold
+                        if (Object.keys(data).length > 0) {
+                            for (let prop in data) {
+                                result.push({
+                                    key: prop,
+                                    value: data[prop]
+                                });
                             }
-                        ]
+                        }
                         return res.status(200).send(result);
                     }
                 });
@@ -542,11 +531,7 @@ exports.getLeadStatus = function (req, res, next) {
         }
 
         let result = [];
-        let data = {
-            hot: 0,
-            warm: 0,
-            cold: 0
-        };
+        let data = {};
 
         Job.find(query, function (err, jobs) {
             if (err) {
@@ -556,27 +541,19 @@ exports.getLeadStatus = function (req, res, next) {
                 })
             } else {
                 for (let i = 0; i < jobs.length; i++) {
-                    if (jobs[i].effort.sales === "Introduction") {
-                        data.cold++;
-                    } else if (jobs[i].effort.sales === "Followup" || jobs[i].effort.sales === "Proposal") {
-                        data.warm++;
-                    } else if (jobs[i].effort.sales === "Demo") {
-                        data.hot++;
+                    let key = jobs[i].effort.lead;
+                    if (key) {
+                        data[key] ? data[key]++ : data[key] = 1;
                     }
                 }
-                result = [{
-                        key: "Aterm",
-                        value: data.hot
-                    },
-                    {
-                        key: "Bterm",
-                        value: data.warm
-                    },
-                    {
-                        key: "Cterm",
-                        value: data.cold
+                if (Object.keys(data).length > 0) {
+                    for (let prop in data) {
+                        result.push({
+                            key: prop,
+                            value: data[prop]
+                        });
                     }
-                ]
+                }
                 return res.status(200).send(result);
             }
         });
