@@ -124,6 +124,13 @@ exports.editClient = function (req, res, next) {
             }
         }
 
+        var log = {
+            created: new Date(),
+            text: 'Updated',
+            type: 'Client',
+            by: user.employee.name
+        };
+
         let update = {
             $push: {
                 logs: log
@@ -138,6 +145,10 @@ exports.editClient = function (req, res, next) {
             assignedTo: client.assignedTo,
             modified: new Date()
         };
+
+        if (client.status) {
+            update.status = client.status
+        }
 
         if (client.mail) {
             update.mail = client.mail

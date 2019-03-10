@@ -79,6 +79,7 @@ router.get('/team/chart/:id/:start/:end', cookie.Authenticate, team.getTeamChart
 router.get('/chart/:type/:start/:end', cookie.Authenticate, chart.getChartDateCount);
 router.get('/download/:type/:start/:end/:id?', cookie.Authenticate, chart.getDataDownload);
 router.get('/lead/status/:start/:end', cookie.Authenticate, chart.getLeadStatus);
+router.get('/lead/data/:start/:end/:term', cookie.Authenticate, chart.getLeadData);
 
 // Notifications
 router.get('/notification', cookie.Authenticate, notification.getUnReads);

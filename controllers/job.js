@@ -58,6 +58,7 @@ exports.createJob = function (req, res, next) {
                     _id: effort.clientId
                 }, {
                     modified: new Date(),
+                    status: effort.effort.lead,
                     $push: {
                         logs: {
                             created: new Date(),

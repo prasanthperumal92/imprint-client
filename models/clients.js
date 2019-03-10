@@ -64,6 +64,9 @@ var clientSchema = new Schema({
         unique: true,
         index: true
     },
+    status: {
+        type: String
+    },
     description: {
         type: String
     },
