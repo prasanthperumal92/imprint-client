@@ -11,7 +11,7 @@ exports.addClient = function (req, res, next) {
 
     console.log(user);
 
-    if (!client || Object.keys(client).length === 0 || !client.name || !client.address || !client.contact || !client.person) {
+    if (!client || Object.keys(client).length === 0 || !client.name || !client.address || !client.city || !client.state || !client.contact || !client.person) {
         return res.status(400).send({
             message: "Some Mandatory field is missing"
         });
@@ -96,7 +96,7 @@ exports.editClient = function (req, res, next) {
 
     console.log(user);
 
-    if (!client || Object.keys(client).length === 0 || !client.name || !client.address || !client.contact || !client.person || !client._id) {
+    if (!client || Object.keys(client).length === 0 || !client.name || !client.address || !client.city || !client.state || !client.contact || !client.person || !client._id) {
         return res.status(400).send({
             message: "Some Mandatory field is missing"
         });
@@ -124,30 +124,47 @@ exports.editClient = function (req, res, next) {
             }
         }
 
+        let update = {
+            $push: {
+                logs: log
+            },
+            address: client.address,
+            name: client.name,
+            person: client.person,
+            contact: client.contact,
+            designation: client.designation,
+            city: client.city,
+            state: client.state,
+            assignedTo: client.assignedTo,
+            modified: new Date()
+        };
+
+        if (client.mail) {
+            update.mail = client.mail
+        }
+        if (client.person2) {
+            update.person2 = client.person2
+        }
+        if (client.contact2) {
+            update.contact2 = client.contact2
+        }
+        if (client.mail2) {
+            update.mail2 = client.mail2
+        }
+        if (client.description) {
+            update.description = client.description
+        }
+
+        console.log("Update Query", update);
+
         if (!original) {
             return res.status(409).send({
                 message: "Already a Client available with this name"
             });
         } else {
-            var log = {
-                created: new Date(),
-                text: 'Updated',
-                type: 'Client',
-                by: user.employee.name
-            };
-            Client.update({
+            Client.updateOne({
                 _id: client._id
-            }, {
-                $push: {
-                    logs: log
-                },
-                address: client.address,
-                name: client.name,
-                person: client.person,
-                contact: client.contact,
-                assignedTo: client.assignedTo,
-                modified: new Date()
-            }, function (err, data) {
+            }, update, function (err, data) {
                 if (err && !err.code === 11000) {
                     return res.status(401).send({
                         message: "Error Saving Client Information"

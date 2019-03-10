@@ -56,9 +56,9 @@ exports.getAllDetails = function (req, res, next) {
     var month = req.params.month || d.getMonth() + 1;
     console.log(year, month);
     var tmp = new Date(year, month - 1, 15);
-    var start = moment(tmp).startOf('month').format('YYYY-MM-DD[T]HH:mm:ss');
-    var end = moment(tmp).endOf('month').format('YYYY-MM-DD[T]HH:mm:ss');
-    console.log(tmp, start, end);
+    var start = moment(tmp).subtract(3, "month").startOf('month').format('YYYY-MM-DD[T]HH:mm:ss');
+    var end = moment(tmp).add(3, "month").endOf('month').format('YYYY-MM-DD[T]HH:mm:ss');
+
     var jobQuery = {},
         taskQuery = {},
         leaveQuery = {};
@@ -137,6 +137,7 @@ exports.getAllDetails = function (req, res, next) {
                 } else {
                     Leave.find(leaveQuery, function (err, leaves) {
                         console.log(err, leaves);
+                        console.log(tmp, start, end);
                         if (err) {
                             return res.status(500).send({
                                 message: "Error looking up Task Data!!!"

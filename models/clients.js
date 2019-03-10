@@ -64,13 +64,37 @@ var clientSchema = new Schema({
         unique: true,
         index: true
     },
+    description: {
+        type: String
+    },
     address: {
+        type: String
+    },
+    city: {
+        type: String
+    },
+    state: {
         type: String
     },
     contact: {
         type: String
     },
     person: {
+        type: String
+    },
+    mail: {
+        type: String
+    },
+    designation: {
+        type: String
+    },
+    contact2: {
+        type: String
+    },
+    person2: {
+        type: String
+    },
+    mail2: {
         type: String
     },
     assignedTo: {
