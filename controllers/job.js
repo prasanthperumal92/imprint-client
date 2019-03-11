@@ -23,11 +23,11 @@ exports.createJob = function (req, res, next) {
         });
     }
 
-    if (!effort.effort.coordinates) {
-        return res.status(400).send({
-            message: "Coordinates is missing"
-        });
-    }
+    // if (!effort.effort.coordinates) {
+    //     return res.status(400).send({
+    //         message: "Coordinates is missing"
+    //     });
+    // }
 
     var url = config.maps.url + effort.effort.coordinates[0] + "," + effort.effort.coordinates[1] + "&key=" + process.env.GOOGLE_API_KEY;
     console.log(url);
