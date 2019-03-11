@@ -73,6 +73,12 @@ var clientSchema = new Schema({
     address: {
         type: String
     },
+    activity: {
+        type: String
+    },
+    product: {
+        type: String
+    },
     city: {
         type: String
     },

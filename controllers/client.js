@@ -150,6 +150,14 @@ exports.editClient = function (req, res, next) {
             update.status = client.status
         }
 
+        if (client.product) {
+            update.product = client.product
+        }
+
+        if (client.activity) {
+            update.activity = client.activity
+        }
+
         if (client.mail) {
             update.mail = client.mail
         }

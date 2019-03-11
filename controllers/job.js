@@ -23,7 +23,7 @@ exports.createJob = function (req, res, next) {
         });
     }
 
-    // if (!effort.effort.coordinates) {
+    // if (!effort.effort.coordinates && typeof effort.effort.coordinates !== Array ) {
     //     return res.status(400).send({
     //         message: "Coordinates is missing"
     //     });
@@ -59,6 +59,8 @@ exports.createJob = function (req, res, next) {
                 }, {
                     modified: new Date(),
                     status: effort.effort.lead,
+                    activity: effort.effort.sales,
+                    product: effort.effort.product,
                     $push: {
                         logs: {
                             created: new Date(),
