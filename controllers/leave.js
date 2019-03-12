@@ -125,7 +125,7 @@ exports.updateLeave = function (req, res, next) {
             Log.addLog({
                 userId: user.employee._id,
                 clientId: user._id,
-                text: leaveData.status + ' ' + leaveData.type + ' on ' + leaveData.start + ' for ' + leaveData.days,
+                text: leaveData.status + ' ' + newLeaveData.type + ' on ' + newLeaveData.start + ' for ' + newLeaveData.days,
                 type: 'leave',
                 by: user.employee.name,
                 created: new Date()

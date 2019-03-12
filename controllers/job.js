@@ -74,8 +74,8 @@ exports.createJob = function (req, res, next) {
                     Log.addLog({
                         userId: user.employee._id,
                         clientId: user._id,
-                        clientName: effort.client,
-                        text: 'Created an DSR for client ' + effort.client,
+                        clientName: effort.effort.client,
+                        text: 'Created an DSR for client ' + effort.effort.client,
                         type: 'dsr',
                         by: user.employee.name,
                         created: new Date()
