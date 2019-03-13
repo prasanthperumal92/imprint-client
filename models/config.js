@@ -34,7 +34,7 @@ var configSchema = new Schema({
         type: Schema.Types.ObjectId
     },
     appList: [appSchema],
-    leads: [orderSchema, ],
+    leads: [orderSchema],
     sales: [orderSchema],
     products: [orderSchema],
     details: [orderSchema],
