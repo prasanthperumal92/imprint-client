@@ -18,7 +18,7 @@ exports.getTypeStatus = function (req, res, next) {
     let project = {
         status: true,
         activity: true,
-        products: true,
+        products: true
     };
 
     if (!start || !end || !type) {
@@ -36,16 +36,27 @@ exports.getTypeStatus = function (req, res, next) {
                 message: "Server is busy, Please try again!"
             })
         }
-        configList.length > 0 ? configList = configList[0] : configList = {};
-        let typeList = _.cloneDeep(configList[type]),
+
+        if (configList.length > 0) {
+            configList = configList[0]
+        } else {
+            configList = {};
+        }
+
+        let typeList = configList[type],
             key;
-        if (type === 'leads') {
+        if (type === 'lead') {
             key = "status";
         } else if (type === 'sales') {
             key = "activity";
+        } else if (type === 'product') {
+            key = "product";
         } else {
-            key = "products";
+            return res.status(400).send({
+                message: "Unknown type passed!!"
+            })
         }
+
         if (user.employee.type === "employee") {
             query = {
                 assignedTo: employeeId || user.employee._id,
@@ -61,7 +72,7 @@ exports.getTypeStatus = function (req, res, next) {
                         message: "Server is busy, Please try again!"
                     })
                 } else {
-                    console.log(data, type, typeList);
+                    console.log(data, key, typeList);
                     let result = getFilteredData(data, key, typeList);
                     return res.status(200).send(result);
                 }
@@ -82,7 +93,7 @@ exports.getTypeStatus = function (req, res, next) {
                             message: "Server is busy, Please try again!"
                         })
                     } else {
-                        console.log(data, type, typeList);
+                        console.log(data, key, typeList);
                         let result = getFilteredData(data, key, typeList);
                         return res.status(200).send(result);
                     }
@@ -111,7 +122,7 @@ exports.getTypeStatus = function (req, res, next) {
                                     message: "Server is busy, Please try again!"
                                 })
                             } else {
-                                console.log(data, type, typeList);
+                                console.log(data, key, typeList);
                                 let result = getFilteredData(data, key, typeList);
                                 return res.status(200).send(result);
                             }
@@ -130,8 +141,6 @@ function getFilteredData(arr, key, list) {
         obj[list[i]['key']] = 0
         for (let j = 0; j < arr.length; j++) {
             let item = arr[j];
-            console.log(item);
-            console.log(item[key], list[i]['key']);
             if (list[i]['key'] === item[key]) {
                 obj[list[i]['key']]++;
             }
@@ -141,229 +150,259 @@ function getFilteredData(arr, key, list) {
             value: obj[list[i]['key']]
         });
     }
-    console.log(result);
     return result;
 }
 
-exports.getDataDownload = function (req, res, next) {
+
+exports.getTableData = function (req, res, next) {
     var user = req.user;
     var type = req.params.type;
     var start = req.params.start;
     var end = req.params.end;
-    var id = req.params.id;
+    var status = req.params.term;
     let query = {};
 
-    if (type !== 'team') {
-        if (user.employee.type === "manager") {
-            getMyEmployees(user, function (err, emps) {
-                if (err) {
-                    console.log(err);
-                    return res.status(500).send({
-                        message: "Server is busy, Please try again!"
-                    })
-                } else {
-                    query = {
-                        task: {
-                            $or: [{
-                                    'assignedTo': user.employee._id
-                                },
-                                {
-                                    'assignedBy': user.employee._id
-                                }
-                            ],
-                            'modified': {
-                                $gte: moment(start).startOf('day').toISOString(),
-                                $lte: moment(end).endOf('day').toISOString(),
-                            }
-                        },
-                        job: {
-                            'created': {
-                                $gte: moment(start).startOf('day').toISOString(),
-                                $lte: moment(end).endOf('day').toISOString(),
-                            },
-                            'employeeId': {
-                                $in: emps
-                            }
-                        },
-                        client: {
-                            'modified': {
-                                $gte: moment(start).startOf('day').toISOString(),
-                                $lte: moment(end).endOf('day').toISOString(),
-                            },
-                            $or: [{
-                                    'assignedTo': user.employee._id
-                                },
-                                {
-                                    'createdBy': user.employee._id
-                                }
-                            ],
-                        }
-                    }
+    if (!start || !end || !type || !status) {
+        return res.status(400).send({
+            message: "Please check the values passed, Some values are missing!"
+        })
+    }
 
-                    async.parallel({
-                        job: function (callback) {
-                            Job.find(query.job, function (err, jobs) {
-                                if (err) {
-                                    console.log(err);
-                                    jobs = [];
-                                }
-                                let temp = JSON.parse(JSON.stringify(jobs));
-                                jobs = flattenJob(temp);
-                                callback(null, jobs);
-                            });
-                        },
-                        task: function (callback) {
-                            Task.find(query.task, function (err, tasks) {
-                                if (err) {
-                                    console.log(err);
-                                    tasks = [];
-                                }
-                                callback(null, tasks);
-                            });
-                        },
-                        client: function (callback) {
-                            Client.find(query.client, function (err, clients) {
-                                if (err) {
-                                    console.log(err);
-                                    clients = [];
-                                }
-                                callback(null, clients);
-                            });
-                        }
-                    }, function (err, results) {
-                        console.log(results);
-                        return res.status(200).send(results);
-                    });
+    let project = {
+        name: true,
+        clientId: true,
+        status: true,
+        address: true,
+        city: true,
+        state: true,
+        person: true,
+        assignedTo: true,
+        createdBy: true
+    };
 
-
-                }
-            });
+    Config.find({
+        userId: user._id
+    }).lean().exec(function (err, configList) {
+        if (err) {
+            console.log(err);
+            return res.status(500).send({
+                message: "Server is busy, Please try again!"
+            })
         } else {
-            query = {
-                job: {
-                    'created': {
-                        $gte: moment(start).startOf('day').toISOString(),
-                        $lte: moment(end).endOf('day').toISOString(),
-                    },
-                    'employeeId': user.employee._id
-                },
-                client: {
-                    'modified': {
-                        $gte: moment(start).startOf('day').toISOString(),
-                        $lte: moment(end).endOf('day').toISOString(),
-                    },
-                    'assignedTo': user.employee._id
-                }
+            let key;
+            if (type === 'lead') {
+                key = "status";
+            } else if (type === 'sales') {
+                key = "activity";
+            } else if (type === 'product') {
+                key = "product";
+            } else {
+                return res.status(400).send({
+                    message: "Unknown type passed!!"
+                })
             }
 
-            async.parallel({
-                job: function (callback) {
-                    Job.find(query.job, function (err, jobs) {
-                        if (err) {
-                            console.log(err);
-                            jobs = [];
-                        }
-                        let temp = JSON.parse(JSON.stringify(jobs));
-                        jobs = flattenJob(temp);
-                        callback(null, jobs);
-                    });
-                },
-                task: function (callback) {
-                    callback(null, []);
-                },
-                client: function (callback) {
-                    Client.find(query.client, function (err, clients) {
-                        if (err) {
-                            console.log(err);
-                            clients = [];
-                        }
-                        callback(null, clients);
-                    });
-                }
-            }, function (err, results) {
-                console.log(results);
-                return res.status(200).send(results);
-            });
-
-        }
-
-    } else if (type === 'team') {
-        start = moment(start).startOf('day').toISOString();
-        // end today
-        end = moment(end).endOf('day').toISOString();
-
-        var result = {};
-
-        Team.findById(id, function (err, team) {
-            if (err) {
-                console.log(err);
-                return res.status(500).send({
-                    message: "Server is busy, Please try again!"
-                })
+            if (configList.length > 0) {
+                configList = configList[0]
             } else {
-                console.log(team);
-                let teamPeopleIds = team.members.map(e => e.userId);
-                teamPeopleIds.push(team.leaderId);
-                let teamPeopleData = [];
-                User.findById({
-                    _id: user._id
-                }, function (err, employees) {
+                configList = {};
+            }
+            let typeList = configList[type];
+            if (user.employee.type === "manager") {
+                getMyEmployees(user, function (err, emps) {
                     if (err) {
                         console.log(err);
                         return res.status(500).send({
                             message: "Server is busy, Please try again!"
                         })
                     } else {
-                        let emps = employees.employees;
-                        for (let j = 0; j < emps.length; j++) {
-                            let _id = emps[j]._id.toString();
-                            if (teamPeopleIds.indexOf(_id) > -1) {
-                                teamPeopleData.push({
-                                    _id: emps[j]._id,
-                                    name: emps[j].name
-                                });
+                        query = {
+                            'modified': {
+                                $gte: moment(start).startOf('day').toISOString(),
+                                $lte: moment(end).endOf('day').toISOString(),
+                            },
+                            [key]: status,
+                            assignedTo: {
+                                $in: emps
                             }
                         }
-                        console.log(teamPeopleIds, start, end);
-                        Job.getJobByEmployeeId(teamPeopleIds, start, end, function (err, jobData) {
+
+                        console.log(JSON.stringify(query));
+                        Client.find(query, project, function (err, clients) {
                             if (err) {
                                 console.log(err);
                                 return res.status(500).send({
                                     message: "Server is busy, Please try again!"
                                 })
+                            } else {
+                                return res.status(200).send(clients);
                             }
-                            let temp = JSON.parse(JSON.stringify(jobData));
-                            result.job = flattenJob(temp);
-                            Task.getTaskByEmployeeId(teamPeopleIds, start, end, function (err, taskData) {
-                                if (err) {
-                                    console.log(err);
-                                    return res.status(500).send({
-                                        message: "Server is busy, Please try again!"
-                                    })
-                                }
-                                result.task = taskData;
-                                console.log(result);
-                                Client.getClientByEmployeeId(teamPeopleIds, start, end, function (err, clientData) {
-                                    if (err) {
-                                        console.log(err);
-                                        return res.status(500).send({
-                                            message: "Server is busy, Please try again!"
-                                        })
-                                    }
-                                    result.client = clientData;
-                                    console.log(result);
-                                    return res.status(200).send({
-                                        title: team.name,
-                                        leaderId: team.leaderId,
-                                        data: result,
-                                        members: team.members
-                                    });
-                                });
-                            });
                         });
                     }
                 });
+            } else {
+                query = {
+                    'modified': {
+                        $gte: moment(start).startOf('day').toISOString(),
+                        $lte: moment(end).endOf('day').toISOString(),
+                    },
+                    [key]: status,
+                    assignedTo: user.employee._id
+                }
+
+                console.log(query);
+                Client.find(query, project, function (err, clients) {
+                    if (err) {
+                        console.log(err);
+                        return res.status(500).send({
+                            message: "Server is busy, Please try again!"
+                        })
+                    } else {
+                        return res.status(200).send(clients);
+                    }
+                });
             }
+        }
+    });
+}
+
+
+exports.getDataDownload = function (req, res, next) {
+    var user = req.user;
+    var start = req.params.start;
+    var end = req.params.end;
+    var employeeId = req.params.employee;
+    let query = {};
+
+    if (!start || !end || !employeeId) {
+        return res.status(400).send({
+            message: "Please check the values passed, Some values are missing!"
+        })
+    }
+
+    let project = {
+        name: true,
+        person: true,
+        designation: true,
+        mail: true,
+        description: true,
+        person2: true,
+        address: true,
+        city: true,
+        status: true,
+        state: true,
+        contact: true,
+        contact2: true,
+        assignedTo: true,
+        clientId: true,
+        createdBy: true,
+        created: true,
+        modified: true
+    }
+
+    if (employeeId && employeeId !== "all") {
+        query = {
+            job: {
+                'created': {
+                    $gte: moment(start).startOf('day').toISOString(),
+                    $lte: moment(end).endOf('day').toISOString(),
+                },
+                'employeeId': employeeId
+            },
+            client: {
+                'modified': {
+                    $gte: moment(start).startOf('day').toISOString(),
+                    $lte: moment(end).endOf('day').toISOString(),
+                },
+                'assignedTo': employeeId
+            }
+        }
+
+        async.parallel({
+            job: function (callback) {
+                Job.find(query.job, function (err, jobs) {
+                    if (err) {
+                        console.log(err);
+                        jobs = [];
+                    }
+                    let temp = JSON.parse(JSON.stringify(jobs));
+                    jobs = flattenJob(temp);
+                    callback(null, jobs);
+                });
+            },
+            client: function (callback) {
+                Client.find(query.client, project, function (err, clients) {
+                    if (err) {
+                        console.log(err);
+                        clients = [];
+                    }
+                    callback(null, clients);
+                });
+            }
+        }, function (err, results) {
+            console.log(results);
+            return res.status(200).send(results);
+        });
+    } else if (employeeId === "all") {
+        getMyEmployees(user, function (err, emps) {
+            if (err) {
+                console.log(err);
+                return res.status(500).send({
+                    message: "Server is busy, Please try again!"
+                })
+            } else {
+                query = {
+                    job: {
+                        'created': {
+                            $gte: moment(start).startOf('day').toISOString(),
+                            $lte: moment(end).endOf('day').toISOString(),
+                        },
+                        'employeeId': {
+                            $in: emps
+                        }
+                    },
+                    client: {
+                        'modified': {
+                            $gte: moment(start).startOf('day').toISOString(),
+                            $lte: moment(end).endOf('day').toISOString(),
+                        },
+                        'assignedTo': {
+                            $in: emps
+                        }
+                    }
+                }
+
+                async.parallel({
+                    job: function (callback) {
+                        Job.find(query.job, function (err, jobs) {
+                            if (err) {
+                                console.log(err);
+                                jobs = [];
+                            }
+                            let temp = JSON.parse(JSON.stringify(jobs));
+                            jobs = flattenJob(temp);
+                            callback(null, jobs);
+                        });
+                    },
+                    client: function (callback) {
+                        Client.find(query.client, project, function (err, clients) {
+                            if (err) {
+                                console.log(err);
+                                clients = [];
+                            }
+                            callback(null, clients);
+                        });
+                    }
+                }, function (err, results) {
+                    console.log(results);
+                    return res.status(200).send(results);
+                });
+            }
+        });
+    } else {
+        return res.status(200).send({
+            job: [],
+            client: []
         });
     }
 }
@@ -376,6 +415,7 @@ function getMyEmployees(user, cb) {
             cb(err, []);
         } else {
             let emps = [];
+            emps.push(user.employee._id);
             var employee = userData.toJSON();
             for (var i = 0; i < userData.employees.length; i++) {
                 if (userData.employees[i].reportingTo.equals(user.employee._id)) {
@@ -385,4 +425,18 @@ function getMyEmployees(user, cb) {
             cb(null, emps);
         }
     });
+}
+
+function flattenJob(arr) {
+    let data = [];
+    for (let i = 0; i < arr.length; i++) {
+        let item = arr[i];
+        let tmp = item.effort;
+        for (let key in tmp) {
+            item[key] = tmp[key];
+        }
+        item.effort = undefined;
+        data.push(item);
+    }
+    return data;
 }
