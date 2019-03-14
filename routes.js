@@ -42,6 +42,7 @@ router.get('/all/clients/:limit/:skip', cookie.Authenticate, client.getLimitedCl
 router.get('/meta/:name', cookie.Authenticate, meta.getMeta);
 router.get('/job/dsr/:id?/:skip?', cookie.Authenticate, job.getJob);
 router.post('/job/dsr', cookie.Authenticate, job.createJob);
+router.get('/job/each/:id', cookie.Authenticate, job.getEmployeeJobs);
 
 // Cloudinary Credentials
 router.get('/cloudinary', cookie.Authenticate, meta.getCloudinary);

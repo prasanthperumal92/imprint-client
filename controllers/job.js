@@ -147,6 +147,38 @@ exports.deleteJob = function (req, res, next) {
 
 };
 
+exports.getEmployeeJobs = function (req, res, next) {
+    var user = req.user;
+    var id = req.params.id;
+
+    if (!id) {
+        return res.status(400).send({
+            message: "Pass the employee Id to get his jobs"
+        });
+    }
+
+    let start = moment().startOf('day').toDate();
+    let end = moment().endOf('day').toDate();
+    console.log(id, start, end);
+
+    Job.find({
+        employeeId: id,
+        'created': {
+            $gt: start,
+            $lt: end
+        }
+    }, function (err, jobs) {
+        if (err) {
+            return res.status(500).send({
+                message: "Error Looking up for Job"
+            });
+        } else {
+            return res.status(200).send(jobs);
+        }
+    });
+
+}
+
 exports.getJob = function (req, res, next) {
     var user = req.user;
     var id = req.params.id;
