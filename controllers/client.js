@@ -95,6 +95,7 @@ exports.editClient = function (req, res, next) {
     var client = req.body;
 
     console.log(user);
+    console.log(client);
 
     if (!client || Object.keys(client).length === 0 || !client.name || !client.address || !client.city || !client.state || !client.contact || !client.person || !client._id) {
         return res.status(400).send({
