@@ -35,21 +35,53 @@ exports.getProfile = function (req, res, next) {
 exports.getPhotos = function (req, res, next) {
     var user = req.user;
 
-    User.findById(user._id, function (err, user) {
+    User.findById(user._id, function (err, userData) {
         if (err) {
             return res.status(401).send({
                 message: "Error looking up User Information"
             });
         } else {
             let result = [];
-            for (var i = 0; i < user.employees.length; i++) {
-                result.push({
-                    id: user.employees[i]._id,
-                    name: user.employees[i].name,
-                    photo: user.employees[i].photo,
-                    designation: user.employees[i].designation
-                });
+            result.push({
+                id: user.employee._id,
+                name: user.employee.name,
+                photo: user.employee.photo,
+                designation: user.employee.designation,
+                show: true
+            });
+            let users = userData.employees;
+            console.log("Before", users);
+            users = _.filter(users, function (u) {
+                return u.phone !== user.employee.phone;
+            });
+            console.log("After", users);
+            if (user.employee.type !== 'employee') {
+                for (var i = 0; i < users.length; i++) {
+                    let obj = {
+                        id: users[i]._id,
+                        name: users[i].name,
+                        photo: users[i].photo,
+                        designation: users[i].designation
+                    };
+                    if (users[i].reportingTo.equals(user.employee._id)) {
+                        obj.show = true;
+                    } else {
+                        obj.show = false;
+                    }
+                    result.push(obj);
+                }
+            } else {
+                for (var i = 0; i < users.length; i++) {
+                    result.push({
+                        id: users[i]._id,
+                        name: users[i].name,
+                        photo: users[i].photo,
+                        designation: users[i].designation,
+                        show: false
+                    });
+                }
             }
+            console.log("Result", result);
             return res.status(200).send(result);
         }
     });

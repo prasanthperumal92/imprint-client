@@ -105,7 +105,7 @@ exports.editClient = function (req, res, next) {
 
     if (client.name.length < 8) {
         return res.status(400).send({
-            message: "Client name should be minimum * characters length"
+            message: "Client name should be minimum 8 characters length"
         });
     }
 
