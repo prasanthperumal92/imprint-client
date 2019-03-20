@@ -23,7 +23,7 @@ exports.addClient = function (req, res, next) {
         });
     }
 
-    Client.findByName(client.name, function (err, clients) {
+    Client.findExistingClient(client.name, client.contact, function (err, clients) {
         if (err) {
             return res.status(401).send({
                 message: "Error looking up Client Information"
@@ -111,7 +111,7 @@ exports.editClient = function (req, res, next) {
 
     let original = false;
 
-    Client.findByName(client.name, function (err, clients) {
+    Client.findExistingClient(client.name, client.contact, function (err, clients) {
         if (err) {
             return res.status(401).send({
                 message: "Error looking up Client Information"
@@ -179,7 +179,7 @@ exports.editClient = function (req, res, next) {
 
         if (!original) {
             return res.status(409).send({
-                message: "Already a Client available with this name"
+                message: "Already a Client available with this name or contact number"
             });
         } else {
             Client.updateOne({
@@ -274,9 +274,10 @@ exports.searchClient = function (req, res, next) {
     }, {
         _id: 1,
         name: 1,
-        address: 1,
-        contact: 1,
-        person: 1
+        createdBy: 1,
+        assignedTo: 1,
+        clientId: 1,
+        modified: 1
     }, function (err, clients) {
         if (err) {
             return res.status(401).send({
@@ -308,19 +309,14 @@ exports.clientList = function (req, res, next) {
             }
         }
 
-        Client.find(query, {
-            name: 1,
-            clientId: 1,
-            createdBy: 1,
-            assignedTo: 1,
-            modified: 1
-        }, function (err, clients) {
+        Client.find(query, function (err, clients) {
             if (err) {
                 return res.status(401).send({
                     message: "Error looking up Client Information"
                 });
             } else {
-                return res.status(200).send(_.sortBy(clients, 'name'));
+                let tmp = _.sortBy(clients, 'modified') || [];
+                return res.status(200).send(tmp.reverse());
             }
         });
     } else {
@@ -342,7 +338,8 @@ exports.clientList = function (req, res, next) {
                         message: "Error looking up Client Information"
                     });
                 } else {
-                    return res.status(200).send(_.sortBy(clients, 'name'));
+                    let tmp = _.sortBy(clients, 'modified') || [];
+                    return res.status(200).send(tmp.reverse());
                 }
             });
     }
@@ -360,7 +357,8 @@ exports.getLimitedClient = function (req, res, next) {
         name: 1,
         address: 1,
         contact: 1,
-        person: 1
+        person: 1,
+        clientId: 1
     }).sort({
         'name': -1
     }).skip(skip).limit(limit).exec(function (err, clients) {
@@ -370,7 +368,8 @@ exports.getLimitedClient = function (req, res, next) {
                 message: "Error looking up Client Information"
             });
         } else {
-            return res.status(200).send(_.sortBy(clients, 'name'));
+            let tmp = _.sortBy(clients, 'modified') || [];
+            return res.status(200).send(tmp.reverse());
         }
     });
 }

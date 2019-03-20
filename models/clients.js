@@ -124,9 +124,13 @@ var clientSchema = new Schema({
     collection: 'client'
 });
 
-clientSchema.statics.findByName = function (name, callback) {
+clientSchema.statics.findExistingClient = function (name, contact, callback) {
     this.find({
-        name: name
+        $or: [{
+            name: name
+        }, {
+            contact: contact
+        }]
     }, callback);
 }
 

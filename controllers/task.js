@@ -188,11 +188,6 @@ exports.getWebTasks = function (req, res, next) {
     let end = new Date(input.toDate);
     end.setHours(23, 59, 59, 999);
     let query = {
-        $or: [{
-            'assignedBy': user.employee._id
-        }, {
-            'assignedTo': user.employee._id
-        }],
         'status': {
             $ne: 'Removed'
         },
@@ -203,8 +198,16 @@ exports.getWebTasks = function (req, res, next) {
     }
 
     if (input.filter) {
-        query[input.filter.key] = input.filter.value
+        query[input.filter.key] = input.filter.value;
+    } else {
+        query['$or'] = [{
+            'assignedBy': user.employee._id
+        }, {
+            'assignedTo': user.employee._id
+        }];
     }
+
+    console.log(query);
 
     Task.getTasksDynamic(query, input.sort, input.order, input.skip, input.limit, function (err, data) {
         if (err) {
