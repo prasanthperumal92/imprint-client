@@ -12,7 +12,7 @@ exports.createTracks = function (req, res, next) {
         })
     }
 
-    var today = moment().startOf('day').toDate();
+    var today = moment().startOf('day').format('DD-MM-YYYY');
     let uniq = [];
     let tmp = [];
     for (let i = 0; i < location.length; i++) {
@@ -22,7 +22,7 @@ exports.createTracks = function (req, res, next) {
         }
     }
 
-    console.log(uniq);
+    console.log(today, uniq);
 
     Track.updateLocation(user.employee._id, today, uniq, function (err, track) {
         if (err) {
@@ -39,11 +39,11 @@ exports.createTracks = function (req, res, next) {
 
 exports.getTracks = function (req, res, next) {
     var user = req.user;
-    var created = moment().startOf('day').toDate();
+    var created = moment().startOf('day').format('DD-MM-YYYY');
     var id = req.params.id || user.employee._id;
 
 
-    let createdOn = moment(new Date(req.params.date)).startOf('day').toDate() || created;
+    let createdOn = moment(new Date(req.params.date)).startOf('day').format('DD-MM-YYYY') || created;
     console.log(id, user, createdOn);
 
     Track.getTrackByUserId(id, createdOn, function (err, list) {

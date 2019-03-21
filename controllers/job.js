@@ -65,7 +65,7 @@ exports.createJob = function (req, res, next) {
                         logs: {
                             created: new Date(),
                             text: 'Created',
-                            type: 'DSR',
+                            type: 'Aterm',
                             by: effort.name
                         }
                     }
@@ -75,8 +75,8 @@ exports.createJob = function (req, res, next) {
                         userId: user.employee._id,
                         clientId: user._id,
                         clientName: effort.effort.client,
-                        text: 'Created an DSR for client ' + effort.effort.client,
-                        type: 'dsr',
+                        text: 'Created an Activity for client ' + effort.effort.client,
+                        type: 'Aterm',
                         by: user.employee.name,
                         created: new Date()
                     });
@@ -131,8 +131,8 @@ exports.deleteJob = function (req, res, next) {
                         userId: user.employee._id,
                         clientId: user._id,
                         clientName: job.effort.client,
-                        text: 'Deleted the DSR for client ' + job.effort.client,
-                        type: 'dsr',
+                        text: 'Deleted the Activity for client ' + job.effort.client,
+                        type: 'Aterm',
                         by: user.employee.name,
                         created: new Date()
                     });

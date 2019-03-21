@@ -53,7 +53,7 @@ exports.createTask = function (req, res, next) {
                             userId: user.employee._id,
                             clientId: user._id,
                             text: 'Created a Task',
-                            type: 'task',
+                            type: 'Bterm',
                             by: user.employee.name,
                             created: new Date()
                         });
@@ -103,7 +103,7 @@ exports.createTask = function (req, res, next) {
                             userId: user.employee._id,
                             clientId: user._id,
                             text: 'Updated the Task',
-                            type: 'task',
+                            type: 'Bterm',
                             by: user.employee.name,
                             created: new Date()
                         });

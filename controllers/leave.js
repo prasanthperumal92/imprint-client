@@ -75,7 +75,7 @@ function saveUpdateData(user, leaveData, res) {
                         userId: user.employee._id,
                         clientId: user._id,
                         text: 'Applied ' + leaveData.type + ' on ' + leaveData.start + ' for ' + leaveData.days,
-                        type: 'leave',
+                        type: 'Leave',
                         by: user.employee.name,
                         created: new Date()
                     });
@@ -126,7 +126,7 @@ exports.updateLeave = function (req, res, next) {
                 userId: user.employee._id,
                 clientId: user._id,
                 text: leaveData.status + ' ' + newLeaveData.type + ' on ' + newLeaveData.start + ' for ' + newLeaveData.days,
-                type: 'leave',
+                type: 'Leave',
                 by: user.employee.name,
                 created: new Date()
             });

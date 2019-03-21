@@ -77,7 +77,7 @@ exports.addClient = function (req, res, next) {
                                 clientId: user._id,
                                 clientName: client.name,
                                 text: 'Created a Client ' + client.name,
-                                type: 'client',
+                                type: 'Cterm',
                                 by: user.employee.name,
                                 created: new Date()
                             });
@@ -195,7 +195,7 @@ exports.editClient = function (req, res, next) {
                         clientId: user._id,
                         clientName: client.name,
                         text: 'Updated the Client ' + client.name,
-                        type: 'client',
+                        type: 'Cterm',
                         by: user.employee.name,
                         created: new Date()
                     });
@@ -250,7 +250,7 @@ exports.addReference = function (req, res, next) {
                         clientId: user._id,
                         clientName: client.name,
                         text: 'Added Reference to the Client ' + client.name,
-                        type: 'client',
+                        type: 'Cterm',
                         by: user.employee.name,
                         created: new Date()
                     });
