@@ -69,6 +69,7 @@ router.post('/leaves', cookie.Authenticate, leave.getWebLeaves);
 // TRACK : API
 router.post('/track', cookie.Authenticate, track.createTracks);
 router.get('/track/:id?/:date?', cookie.Authenticate, track.getTracks);
+router.get('/live/track', cookie.Authenticate, track.getLiveTracks);
 
 // Team : API
 router.post('/team', cookie.Authenticate, team.createTeam);
