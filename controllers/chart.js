@@ -290,6 +290,8 @@ exports.getDataDownload = function (req, res, next) {
         address: true,
         city: true,
         status: true,
+        activity: true,
+        product: true,
         state: true,
         contact: true,
         contact2: true,
