@@ -14,10 +14,10 @@ const chart = require('./controllers/chart');
 const notification = require('./controllers/notifications');
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
-    res.render('index', {
-        title: 'Express'
-    });
+router.get('/', function(req, res, next) {
+	res.render('index', {
+		title: 'Express'
+	});
 });
 
 // Common API
@@ -47,7 +47,7 @@ router.get('/job/each/:id', cookie.Authenticate, job.getEmployeeJobs);
 // Cloudinary Credentials
 router.get('/cloudinary', cookie.Authenticate, meta.getCloudinary);
 
-// Web 
+// Web
 router.post('/job/dsr/get', cookie.Authenticate, job.getJobs);
 router.get('/job/filters/dsr', cookie.Authenticate, job.getFilters);
 router.get('/job/get/dsr/:id', job.getJobForShare);
@@ -89,6 +89,9 @@ router.get('/chart/table/:type/:start/:end/:term', cookie.Authenticate, chart.ge
 // Notifications
 router.get('/notification', cookie.Authenticate, notification.getUnReads);
 router.put('/notification/:id', cookie.Authenticate, notification.updateNotification);
+
+// Logs : API
+router.get('/logs/employee/:id', cookie.Authenticate, employee.getLogs);
 
 // Mail Tester
 router.get('/mail', notification.sendTestMail);
