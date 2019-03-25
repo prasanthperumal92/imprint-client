@@ -246,7 +246,14 @@ exports.logout = function(req, res, next) {
 					message: 'Error Logging out user!!'
 				});
 			} else {
-				return res.status(200).send();
+				res.status(200).send();
+				Log.addLog({
+					userId: user.employee._id,
+					text: 'Logged Out Successfully',
+					type: 'Logout',
+					by: user.employee.name,
+					created: new Date()
+				});
 			}
 		}
 	);
