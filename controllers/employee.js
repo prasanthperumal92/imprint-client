@@ -269,7 +269,7 @@ exports.getLogs = function(req, res, next) {
 		});
 	}
 
-	var start = moment().subtract(6, 'days').startOf('day').toDate();
+	var start = moment().subtract(7, 'days').startOf('day').toDate();
 	var end = moment().endOf('day').toDate();
 
 	console.log(start, end, id);

@@ -74,7 +74,7 @@ function saveUpdateData(user, leaveData, res) {
                     Log.addLog({
                         userId: user.employee._id,
                         clientId: user._id,
-                        text: 'Applied ' + leaveData.type + ' on ' + leaveData.start + ' for ' + leaveData.days,
+                        text: 'Applied ' + leaveData.type + ' on ' + moment(leaveData.start).format('YYYY-MM-DD') + ' for ' + leaveData.days + ' days',
                         type: 'Leave',
                         by: user.employee.name,
                         created: new Date()
@@ -125,7 +125,7 @@ exports.updateLeave = function (req, res, next) {
             Log.addLog({
                 userId: user.employee._id,
                 clientId: user._id,
-                text: leaveData.status + ' ' + newLeaveData.type + ' on ' + newLeaveData.start + ' for ' + newLeaveData.days,
+                text: leaveData.status + ' ' + newLeaveData.type + ' on ' + moment(leaveData.start).format('YYYY-MM-DD') + ' for ' + leaveData.days + ' days',
                 type: 'Leave',
                 by: user.employee.name,
                 created: new Date()
