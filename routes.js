@@ -29,6 +29,8 @@ router.get('/employee/photos', cookie.Authenticate, employee.getPhotos);
 router.post('/employee', cookie.Authenticate, employee.updateEmployee);
 router.put('/employee', cookie.Authenticate, employee.changePassword);
 router.delete('/employee', cookie.Authenticate, employee.logout);
+router.get('/employee/forgot/:email', employee.sendEmailOTP);
+router.post('/employee/forgot', employee.updatePassword);
 
 // Client API :: Allow to add clients and list
 router.post('/clients', cookie.Authenticate, client.addClient);

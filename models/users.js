@@ -113,6 +113,10 @@ var employeeSchema = new Schema({
     doj: {
         type: Date
     },
+    emailOTP: {
+        type: String,
+        trim: true
+    }
 });
 
 employeeSchema.virtual('password')

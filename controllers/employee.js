@@ -1,6 +1,8 @@
 var User = require('../models/users');
 var Log = require('../models/log');
 const common = require('../helpers/common');
+const appConfig = require('../config.json');
+const Notifications = require('./notifications');
 const _ = require('lodash');
 const moment = require('moment');
 
@@ -217,7 +219,14 @@ exports.changePassword = function(req, res, next) {
 								message: 'Error Changing Password!!'
 							});
 						} else {
-							return res.status(200).send();
+							res.status(200).send();
+							Log.addLog({
+								userId: currentUser._id,
+								text: 'Password Changed Successfully',
+								type: 'Login',
+								by: currentUser.name,
+								created: new Date()
+							});
 						}
 					}
 				);
@@ -292,4 +301,167 @@ exports.getLogs = function(req, res, next) {
 			}
 		}
 	);
+};
+
+exports.sendEmailOTP = function(req, res, next) {
+	var email = req.params.email;
+
+	if (!email) {
+		return res.status(400).send({
+			message: 'Invalid Email Address is used!!'
+		});
+	}
+
+	console.log(email);
+	User.find({ 'employees.email': email }, function(err, user) {
+		console.log(err, user);
+		if (err) {
+			return res.status(400).send({
+				message: 'Invalid Email Address is used!!'
+			});
+		} else {
+			if (!user || user.length === 0) {
+				return res.status(400).send({
+					message: 'No User found with this email address!'
+				});
+			}
+			user = user[0];
+			let currentUser;
+			for (var i = 0; i < user.employees.length; i++) {
+				if (user.employees[i].email === email) {
+					currentUser = user.employees[i];
+				}
+			}
+			if (!currentUser) {
+				return res.status(400).send({
+					message: 'No User found with this email address!'
+				});
+			}
+
+			let otpKey = common.generateOTPKey();
+
+			console.log(currentUser, otpKey);
+
+			User.update(
+				{
+					_id: user._id,
+					'employees._id': currentUser._id
+				},
+				{
+					$set: {
+						'employees.$.emailOTP': otpKey
+					}
+				},
+				function(err, updated) {
+					console.log(err, updated);
+					if (err) {
+						return res.status(400).send({
+							message: 'Error Logging out user!!'
+						});
+					} else {
+						let obj = {
+							to: currentUser.email,
+							subject: appConfig.appName + ' - Reset Password',
+							body:
+								'<b>Dear ' +
+								currentUser.name +
+								', </b> <br> Please use this OTP to reset your forgotten password : ' +
+								otpKey +
+								'<br> <br> <p> *** This is an automatically generated email, please do not reply to this message *** </p>'
+						};
+
+						Notifications.sendMail(obj);
+
+						Log.addLog({
+							userId: currentUser._id,
+							text: 'Requested For Forgot Password',
+							type: 'Login',
+							by: currentUser.name,
+							created: new Date()
+						});
+						res.status(200).send();
+					}
+				}
+			);
+		}
+	});
+};
+
+exports.updatePassword = function(req, res, next) {
+	var data = req.body;
+
+	if (Object.keys(data).length == 0 || !data.password || !data.otp) {
+		return res.status(400).send({
+			message: 'Invalid Data'
+		});
+	}
+
+	User.find({ 'employees.email': data.email }, function(err, user) {
+		console.log(err, user);
+		if (err) {
+			return res.status(400).send({
+				message: 'Invalid Email Address is used!!'
+			});
+		} else {
+			if (!user || user.length === 0) {
+				return res.status(400).send({
+					message: 'No User found with this email address!'
+				});
+			}
+			user = user[0];
+			let currentUser;
+			for (var i = 0; i < user.employees.length; i++) {
+				if (user.employees[i].email === data.email) {
+					currentUser = user.employees[i];
+				}
+			}
+			if (!currentUser) {
+				return res.status(400).send({
+					message: 'No User found with this email address!'
+				});
+			}
+
+			console.log(currentUser);
+
+			if (currentUser.emailOTP !== data.otp) {
+				return res.status(400).send({
+					message: 'OTP entered is Wrong!'
+				});
+			}
+
+			var _salt = common.rand(512);
+			var _password = common.sha512(data.password + _salt);
+
+			User.update(
+				{
+					_id: user._id,
+					'employees._id': currentUser._id
+				},
+				{
+					$set: {
+						'employees.$._salt': _salt,
+						'employees.$._password': _password,
+						'employees.$.modified': new Date()
+					}
+				},
+				function(err, updated) {
+					console.log(err, updated);
+					if (err) {
+						return res.status(400).send({
+							message: 'Error Changing Password!!'
+						});
+					} else {
+						res.status(200).send();
+						Log.addLog({
+							userId: currentUser._id,
+							text: 'Password Reset is Done Successfully',
+							type: 'Login',
+							by: currentUser.name,
+							created: new Date()
+						});
+					}
+				}
+			);
+		}
+	});
 };
