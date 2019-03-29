@@ -356,7 +356,7 @@ exports.sendEmailOTP = function(req, res, next) {
 					console.log(err, updated);
 					if (err) {
 						return res.status(400).send({
-							message: 'Error Logging out user!!'
+							message: 'Error Updating user!!'
 						});
 					} else {
 						let obj = {
@@ -379,7 +379,7 @@ exports.sendEmailOTP = function(req, res, next) {
 							by: currentUser.name,
 							created: new Date()
 						});
-						res.status(200).send();
+						res.status(200).send({ key: otpKey });
 					}
 				}
 			);
