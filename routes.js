@@ -81,9 +81,9 @@ router.delete('/team/:id', cookie.Authenticate, team.deleteTeam);
 router.get('/team/chart/:id/:start/:end', cookie.Authenticate, team.getTeamCharts);
 
 // Chart : API
-router.get('/chart/download/:start/:end/:employee?', cookie.Authenticate, chart.getDataDownload);
-router.get('/chart/general/:type/:start/:end/:employee?', cookie.Authenticate, chart.getTypeStatus);
-router.get('/chart/table/:type/:start/:end/:term', cookie.Authenticate, chart.getTableData);
+router.get('/chart/download/:employee?', cookie.Authenticate, chart.getDataDownload);
+router.get('/chart/general/:type/:employee?', cookie.Authenticate, chart.getTypeStatus);
+router.get('/chart/table/:type/:term', cookie.Authenticate, chart.getTableData);
 
 // router.get('/chart/:type/:start/:end', cookie.Authenticate, chart.getChartDateCount);
 // router.get('/lead/status/:start/:end', cookie.Authenticate, chart.getLeadStatus);

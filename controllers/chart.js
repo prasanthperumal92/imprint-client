@@ -11,8 +11,6 @@ var moment = require('moment');
 exports.getTypeStatus = function(req, res, next) {
 	var user = req.user;
 	var type = req.params.type;
-	var start = req.params.start;
-	var end = req.params.end;
 	var employeeId = req.params.employee;
 	let query = {};
 	let project = {
@@ -21,7 +19,7 @@ exports.getTypeStatus = function(req, res, next) {
 		product: true
 	};
 
-	if (!start || !end || !type) {
+	if (!type) {
 		return res.status(400).send({
 			message: 'Please check the values passed, Some values are missing!'
 		});
@@ -61,11 +59,7 @@ exports.getTypeStatus = function(req, res, next) {
 
 			if (user.employee.type === 'employee') {
 				query = {
-					assignedTo: employeeId || user.employee._id,
-					modified: {
-						$gte: moment(start).startOf('day').toISOString(),
-						$lte: moment(end).endOf('day').toISOString()
-					}
+					assignedTo: employeeId || user.employee._id
 				};
 				Client.find(query, project, function(err, data) {
 					if (err) {
@@ -82,11 +76,7 @@ exports.getTypeStatus = function(req, res, next) {
 			} else {
 				if (employeeId && employeeId !== 'all') {
 					query = {
-						assignedTo: employeeId || user.employee._id,
-						modified: {
-							$gte: moment(start).startOf('day').toISOString(),
-							$lte: moment(end).endOf('day').toISOString()
-						}
+						assignedTo: employeeId || user.employee._id
 					};
 					Client.find(query, project, function(err, data) {
 						if (err) {
@@ -111,10 +101,6 @@ exports.getTypeStatus = function(req, res, next) {
 							query = {
 								assignedTo: {
 									$in: emps
-								},
-								modified: {
-									$gte: moment(start).startOf('day').toISOString(),
-									$lte: moment(end).endOf('day').toISOString()
 								}
 							};
 							Client.find(query, project, function(err, data) {
@@ -158,12 +144,10 @@ function getFilteredData(arr, key, list) {
 exports.getTableData = function(req, res, next) {
 	var user = req.user;
 	var type = req.params.type;
-	var start = req.params.start;
-	var end = req.params.end;
 	var status = req.params.term;
 	let query = {};
 
-	if (!start || !end || !type || !status) {
+	if (!type || !status) {
 		return res.status(400).send({
 			message: 'Please check the values passed, Some values are missing!'
 		});
@@ -220,10 +204,6 @@ exports.getTableData = function(req, res, next) {
 							});
 						} else {
 							query = {
-								modified: {
-									$gte: moment(start).startOf('day').toISOString(),
-									$lte: moment(end).endOf('day').toISOString()
-								},
 								[key]: status,
 								assignedTo: {
 									$in: emps
@@ -245,10 +225,6 @@ exports.getTableData = function(req, res, next) {
 					});
 				} else {
 					query = {
-						modified: {
-							$gte: moment(start).startOf('day').toISOString(),
-							$lte: moment(end).endOf('day').toISOString()
-						},
 						[key]: status,
 						assignedTo: user.employee._id
 					};
@@ -271,12 +247,10 @@ exports.getTableData = function(req, res, next) {
 
 exports.getDataDownload = function(req, res, next) {
 	var user = req.user;
-	var start = req.params.start;
-	var end = req.params.end;
 	var employeeId = req.params.employee;
 	let query = {};
 
-	if (!start || !end || !employeeId) {
+	if (!employeeId) {
 		return res.status(400).send({
 			message: 'Please check the values passed, Some values are missing!'
 		});
@@ -307,17 +281,9 @@ exports.getDataDownload = function(req, res, next) {
 	if (employeeId && employeeId !== 'all') {
 		query = {
 			job: {
-				created: {
-					$gte: moment(start).startOf('day').toISOString(),
-					$lte: moment(end).endOf('day').toISOString()
-				},
 				employeeId: employeeId
 			},
 			client: {
-				modified: {
-					$gte: moment(start).startOf('day').toISOString(),
-					$lte: moment(end).endOf('day').toISOString()
-				},
 				assignedTo: employeeId
 			}
 		};
@@ -360,19 +326,11 @@ exports.getDataDownload = function(req, res, next) {
 			} else {
 				query = {
 					job: {
-						created: {
-							$gte: moment(start).startOf('day').toISOString(),
-							$lte: moment(end).endOf('day').toISOString()
-						},
 						employeeId: {
 							$in: emps
 						}
 					},
 					client: {
-						modified: {
-							$gte: moment(start).startOf('day').toISOString(),
-							$lte: moment(end).endOf('day').toISOString()
-						},
 						assignedTo: {
 							$in: emps
 						}
