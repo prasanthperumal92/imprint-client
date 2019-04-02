@@ -68,7 +68,6 @@ exports.getTypeStatus = function(req, res, next) {
 							message: 'Server is busy, Please try again!'
 						});
 					} else {
-						console.log(data, key, typeList);
 						let result = getFilteredData(data, key, typeList);
 						return res.status(200).send(result);
 					}
@@ -85,7 +84,6 @@ exports.getTypeStatus = function(req, res, next) {
 								message: 'Server is busy, Please try again!'
 							});
 						} else {
-							console.log(data, key, typeList);
 							let result = getFilteredData(data, key, typeList);
 							return res.status(200).send(result);
 						}
@@ -110,7 +108,6 @@ exports.getTypeStatus = function(req, res, next) {
 										message: 'Server is busy, Please try again!'
 									});
 								} else {
-									console.log(data, key, typeList);
 									let result = getFilteredData(data, key, typeList);
 									return res.status(200).send(result);
 								}
@@ -312,7 +309,6 @@ exports.getDataDownload = function(req, res, next) {
 				}
 			},
 			function(err, results) {
-				console.log(results);
 				return res.status(200).send(results);
 			}
 		);
@@ -361,7 +357,6 @@ exports.getDataDownload = function(req, res, next) {
 						}
 					},
 					function(err, results) {
-						console.log(results);
 						return res.status(200).send(results);
 					}
 				);
