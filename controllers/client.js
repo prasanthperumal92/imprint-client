@@ -166,16 +166,16 @@ exports.editClient = function(req, res, next) {
 			modified: new Date()
 		};
 
-		if (client.status) {
-			update.status = client.status;
+		if (client.lead) {
+			update.lead = client.lead;
 		}
 
 		if (client.product) {
 			update.product = client.product;
 		}
 
-		if (client.activity) {
-			update.activity = client.activity;
+		if (client.sales) {
+			update.sales = client.sales;
 		}
 
 		if (client.mail) {

@@ -14,8 +14,8 @@ exports.getTypeStatus = function(req, res, next) {
 	var employeeId = req.params.employee;
 	let query = {};
 	let project = {
-		status: true,
-		activity: true,
+		lead: true,
+		sales: true,
 		product: true
 	};
 
@@ -46,9 +46,9 @@ exports.getTypeStatus = function(req, res, next) {
 			let typeList = configList[type],
 				key;
 			if (type === 'lead') {
-				key = 'status';
+				key = 'lead';
 			} else if (type === 'sales') {
-				key = 'activity';
+				key = 'sales';
 			} else if (type === 'product') {
 				key = 'product';
 			} else {
@@ -108,6 +108,7 @@ exports.getTypeStatus = function(req, res, next) {
 										message: 'Server is busy, Please try again!'
 									});
 								} else {
+									console.log(data, query, project);
 									let result = getFilteredData(data, key, typeList);
 									return res.status(200).send(result);
 								}
@@ -153,7 +154,7 @@ exports.getTableData = function(req, res, next) {
 	let project = {
 		name: true,
 		clientId: true,
-		status: true,
+		lead: true,
 		address: true,
 		city: true,
 		state: true,
@@ -175,9 +176,9 @@ exports.getTableData = function(req, res, next) {
 			} else {
 				let key;
 				if (type === 'lead') {
-					key = 'status';
+					key = 'lead';
 				} else if (type === 'sales') {
-					key = 'activity';
+					key = 'sales';
 				} else if (type === 'product') {
 					key = 'product';
 				} else {
@@ -262,8 +263,8 @@ exports.getDataDownload = function(req, res, next) {
 		person2: true,
 		address: true,
 		city: true,
-		status: true,
-		activity: true,
+		lead: true,
+		sales: true,
 		product: true,
 		state: true,
 		contact: true,
