@@ -8,6 +8,7 @@ var CLIENTID = 'CLIENT0005001';
 exports.addClient = function(req, res, next) {
 	var user = req.user;
 	var client = req.body;
+	var configs = req.configs;
 
 	console.log(user);
 
@@ -85,8 +86,8 @@ exports.addClient = function(req, res, next) {
 								userId: user.employee._id,
 								clientId: user._id,
 								clientName: client.name,
-								text: 'Created a Client ' + client.name,
-								type: 'Cterm',
+								text: 'Created a ' + configs.details['Cterm'] + ' ' + client.name,
+								type: configs.details['Cterm'],
 								by: user.employee.name,
 								created: new Date()
 							});
@@ -102,6 +103,7 @@ exports.addClient = function(req, res, next) {
 exports.editClient = function(req, res, next) {
 	var user = req.user;
 	var client = req.body;
+	var configs = req.configs;
 
 	console.log(user);
 	console.log(client);
@@ -147,7 +149,7 @@ exports.editClient = function(req, res, next) {
 		var log = {
 			created: new Date(),
 			text: 'Updated',
-			type: 'Client',
+			type: configs.details['Cterm'],
 			by: user.employee.name
 		};
 
@@ -216,8 +218,8 @@ exports.editClient = function(req, res, next) {
 							userId: user.employee._id,
 							clientId: user._id,
 							clientName: client.name,
-							text: 'Updated the Client ' + client.name,
-							type: 'Cterm',
+							text: 'Updated the ' + configs.details['Cterm'] + ' ' + client.name,
+							type: configs.details['Cterm'],
 							by: user.employee.name,
 							created: new Date()
 						});
@@ -232,6 +234,7 @@ exports.editClient = function(req, res, next) {
 exports.addReference = function(req, res, next) {
 	var user = req.user;
 	var refer = req.body;
+	var configs = req.configs;
 
 	if (!refer || Object.keys(refer).length === 0 || !refer.reference || !refer._id) {
 		return res.status(400).send({
@@ -279,8 +282,8 @@ exports.addReference = function(req, res, next) {
 								userId: user.employee._id,
 								clientId: user._id,
 								clientName: client.name,
-								text: 'Added Reference to the Client ' + client.name,
-								type: 'Cterm',
+								text: 'Added Reference to the ' + configs.details['Cterm'] + ' ' + client.name,
+								type: configs.details['Cterm'],
 								by: user.employee.name,
 								created: new Date()
 							});

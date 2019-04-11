@@ -77,6 +77,9 @@ var clientSchema = new Schema(
 		description: {
 			type: String
 		},
+		remarks: {
+			type: String
+		},
 		address: {
 			type: String
 		},

@@ -10,6 +10,7 @@ var config = require('../config.json');
 exports.createJob = function(req, res, next) {
 	var user = req.user;
 	var effort = req.body;
+	var configs = req.configs;
 
 	if (!effort || Object.keys(effort).length === 0) {
 		return res.status(400).send({
@@ -69,11 +70,12 @@ exports.createJob = function(req, res, next) {
 						lead: effort.effort.lead,
 						sales: effort.effort.sales,
 						product: effort.effort.product,
+						remarks: effort.effort.remarks,
 						$push: {
 							logs: {
 								created: new Date(),
 								text: 'Created',
-								type: 'Aterm',
+								type: configs.details['Aterm'],
 								by: effort.name
 							}
 						}
@@ -84,12 +86,12 @@ exports.createJob = function(req, res, next) {
 							userId: user.employee._id,
 							clientId: user._id,
 							clientName: effort.effort.client,
-							text: 'Created an Activity for client ' + effort.effort.client,
-							type: 'Aterm',
+							text: 'Created an Activity for ' + configs.details['Cterm'] + ' ' + effort.effort.client,
+							type: configs.details['Aterm'],
 							by: user.employee.name,
 							created: new Date()
 						});
-						return res.status(201).send();
+						res.status(201).send();
 					}
 				);
 			}
@@ -116,6 +118,7 @@ exports.getJobForShare = function(req, res, next) {
 exports.deleteJob = function(req, res, next) {
 	var user = req.user;
 	var id = req.params.id;
+	var configs = req.configs;
 
 	if (!id) {
 		return res.status(400).send({
@@ -139,8 +142,8 @@ exports.deleteJob = function(req, res, next) {
 						userId: user.employee._id,
 						clientId: user._id,
 						clientName: job.effort.client,
-						text: 'Deleted the Activity for client ' + job.effort.client,
-						type: 'Aterm',
+						text: 'Deleted the Activity for ' + configs.details['Cterm'] + ' ' + job.effort.client,
+						type: configs.details['Aterm'],
 						by: user.employee.name,
 						created: new Date()
 					});
