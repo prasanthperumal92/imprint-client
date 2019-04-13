@@ -451,3 +451,55 @@ exports.getLimitedClient = function(req, res, next) {
 			}
 		});
 };
+
+exports.getMyClients = function(req, res, next) {
+	var user = req.user;
+	var limit = parseInt(req.params.limit) || 10;
+	var skip = parseInt(req.params.skip) || 0;
+	var id = req.params.id;
+
+	skip = skip * limit;
+
+	if (!id) {
+		return res.status(400).send({
+			message: 'Employee Id is missing'
+		});
+	}
+
+	Client.find(
+		{
+			$or: [
+				{
+					createdBy: id
+				},
+				{
+					assignedTo: id
+				}
+			]
+		},
+		{
+			_id: 1,
+			name: 1,
+			address: 1,
+			contact: 1,
+			person: 1,
+			clientId: 1
+		}
+	)
+		.sort({
+			name: -1
+		})
+		.skip(skip)
+		.limit(limit)
+		.exec(function(err, clients) {
+			console.log(err, clients);
+			if (err) {
+				return res.status(401).send({
+					message: 'Error looking up Client Information'
+				});
+			} else {
+				let tmp = _.sortBy(clients, 'modified') || [];
+				return res.status(200).send(tmp.reverse());
+			}
+		});
+};

@@ -39,6 +39,7 @@ router.get('/clients/:id?', cookie.Authenticate, client.clientList);
 router.post('/clients/reference', cookie.Authenticate, client.addReference);
 router.get('/search/clients/:text', cookie.Authenticate, client.searchClient);
 router.get('/all/clients/:limit/:skip', cookie.Authenticate, client.getLimitedClient);
+router.get('/each/clients/:id/:limit/:skip', cookie.Authenticate, client.getMyClients);
 
 // DSR Form Meta Data - APP
 router.get('/meta/:name', cookie.Authenticate, meta.getMeta);
