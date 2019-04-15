@@ -84,7 +84,7 @@ router.get('/team/chart/:id/:start/:end', cookie.Authenticate, team.getTeamChart
 // Chart : API
 router.get('/chart/download/:employee?', cookie.Authenticate, chart.getDataDownload);
 router.get('/chart/general/:type/:employee?', cookie.Authenticate, chart.getTypeStatus);
-router.get('/chart/table/:type/:term', cookie.Authenticate, chart.getTableData);
+router.get('/chart/table/:id/:type/:term', cookie.Authenticate, chart.getTableData);
 
 // router.get('/chart/:type/:start/:end', cookie.Authenticate, chart.getChartDateCount);
 // router.get('/lead/status/:start/:end', cookie.Authenticate, chart.getLeadStatus);

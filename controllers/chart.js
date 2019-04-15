@@ -143,9 +143,11 @@ exports.getTableData = function(req, res, next) {
 	var user = req.user;
 	var type = req.params.type;
 	var status = req.params.term;
+	var id = req.params.id;
+
 	let query = {};
 
-	if (!type || !status) {
+	if (!type || !status || !id) {
 		return res.status(400).send({
 			message: 'Please check the values passed, Some values are missing!'
 		});
@@ -163,84 +165,65 @@ exports.getTableData = function(req, res, next) {
 		createdBy: true
 	};
 
-	Config.find({
-		userId: user._id
-	})
-		.lean()
-		.exec(function(err, configList) {
+	let key;
+	if (type === 'lead') {
+		key = 'lead';
+	} else if (type === 'sales') {
+		key = 'sales';
+	} else if (type === 'product') {
+		key = 'product';
+	} else {
+		return res.status(400).send({
+			message: 'Unknown type passed!!'
+		});
+	}
+
+	if (id === 'all') {
+		getMyEmployees(user, function(err, emps) {
 			if (err) {
 				console.log(err);
 				return res.status(500).send({
 					message: 'Server is busy, Please try again!'
 				});
 			} else {
-				let key;
-				if (type === 'lead') {
-					key = 'lead';
-				} else if (type === 'sales') {
-					key = 'sales';
-				} else if (type === 'product') {
-					key = 'product';
-				} else {
-					return res.status(400).send({
-						message: 'Unknown type passed!!'
-					});
-				}
+				query = {
+					[key]: status,
+					assignedTo: {
+						$in: emps
+					}
+				};
 
-				if (configList.length > 0) {
-					configList = configList[0];
-				} else {
-					configList = {};
-				}
-				let typeList = configList[type];
-				if (user.employee.type === 'manager') {
-					getMyEmployees(user, function(err, emps) {
-						if (err) {
-							console.log(err);
-							return res.status(500).send({
-								message: 'Server is busy, Please try again!'
-							});
-						} else {
-							query = {
-								[key]: status,
-								assignedTo: {
-									$in: emps
-								}
-							};
-
-							console.log(JSON.stringify(query));
-							Client.find(query, project, function(err, clients) {
-								if (err) {
-									console.log(err);
-									return res.status(500).send({
-										message: 'Server is busy, Please try again!'
-									});
-								} else {
-									return res.status(200).send(clients);
-								}
-							});
-						}
-					});
-				} else {
-					query = {
-						[key]: status,
-						assignedTo: user.employee._id
-					};
-
-					console.log(query);
-					Client.find(query, project, function(err, clients) {
-						if (err) {
-							console.log(err);
-							return res.status(500).send({
-								message: 'Server is busy, Please try again!'
-							});
-						} else {
-							return res.status(200).send(clients);
-						}
-					});
-				}
+				console.log(JSON.stringify(query));
+				Client.find(query, project, function(err, clients) {
+					if (err) {
+						console.log(err);
+						return res.status(500).send({
+							message: 'Server is busy, Please try again!'
+						});
+					} else {
+						return res.status(200).send(clients);
+					}
+				});
 			}
 		});
+	} else {
+		query = {
+			[key]: status,
+			assignedTo: id
+		};
+
+		console.log(query);
+		Client.find(query, project, function(err, clients) {
+			if (err) {
+				console.log(err);
+				return res.status(500).send({
+					message: 'Server is busy, Please try again!'
+				});
+			} else {
+				return res.status(200).send(clients);
+			}
+		});
+	}
 };
 
 exports.getDataDownload = function(req, res, next) {
