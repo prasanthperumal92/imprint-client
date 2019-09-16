@@ -74,8 +74,8 @@ function saveUpdateData(user, leaveData, res) {
                     Log.addLog({
                         userId: user.employee._id,
                         clientId: user._id,
-                        text: 'Applied ' + leaveData.type + ' on ' + leaveData.start + ' for ' + leaveData.days,
-                        type: 'leave',
+                        text: 'Applied ' + leaveData.type + ' on ' + moment(leaveData.start).format('YYYY-MM-DD') + ' for ' + leaveData.days + ' days',
+                        type: 'Leave',
                         by: user.employee.name,
                         created: new Date()
                     });
@@ -122,14 +122,6 @@ exports.updateLeave = function (req, res, next) {
                 message: "Server is busy, Please try again!"
             });
         } else {
-            Log.addLog({
-                userId: user.employee._id,
-                clientId: user._id,
-                text: leaveData.status + ' ' + leaveData.type + ' on ' + leaveData.start + ' for ' + leaveData.days,
-                type: 'leave',
-                by: user.employee.name,
-                created: new Date()
-            });
             let text = user.employee.name + " has " + leaveData.status + " Your Leave Request";
             Notification.addNotification(newLeaveData.appliedBy, 'attendance', text);
             res.status(200).send();
@@ -137,6 +129,14 @@ exports.updateLeave = function (req, res, next) {
                 if (err || !employee) {
                     console.log("Cannot trigger email", err, employee);
                 } else {
+                    Log.addLog({
+                        userId: user.employee._id,
+                        clientId: user._id,
+                        text: newLeaveData.status + ' ' + newLeaveData.type + ' of ' + employee.name,
+                        type: 'Leave',
+                        by: user.employee.name,
+                        created: new Date()
+                    });
                     let obj = {
                         to: employee.email,
                         subject: "Leave " + leaveData.status,

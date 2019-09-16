@@ -42,7 +42,7 @@ var taskSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['New', 'Progress', 'Done', 'Completed', 'Removed']
+        enum: ['New', 'In-Progress', 'Postponed', 'Closed-Success', 'Closed-Rejected']
     },
     comments: [{
         comment: String,

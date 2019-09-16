@@ -27,7 +27,7 @@ var trackSchema = new Schema({
         required: true
     },
     created: {
-        type: Date
+        type: String
     },
     modified: {
         type: Date,

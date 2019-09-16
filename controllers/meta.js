@@ -23,26 +23,8 @@ exports.getMeta = function (req, res, next) {
             });
         } else {
             let data = meta.toJSON();
-            Config.findByUserId(user._id, function (err, config) {
-                if (err) {
-                    return res.status(500).send({
-                        message: "Error Saving Meta data"
-                    });
-                } else {
-                    console.log(config);
-                    let leads = _.map(config.leads, 'value');
-                    let sales = _.map(config.sales, 'value');
-                    for (let i = 0; i < meta.fields.length; i++) {
-                        if (meta.fields[i].key === 'leads') {
-                            meta.fields[i].value = leads;
-                        } else if (meta.fields[i].key === 'sales') {
-                            meta.fields[i].value = sales;
-                        }
-                    }
-                    data.fields = _.sortBy(meta.fields, 'priority');
-                    return res.status(200).send(data);
-                }
-            });
+            data.fields = _.sortBy(meta.fields, 'priority');
+            return res.status(200).send(data);
         }
     });
 }
@@ -56,9 +38,9 @@ exports.getAllDetails = function (req, res, next) {
     var month = req.params.month || d.getMonth() + 1;
     console.log(year, month);
     var tmp = new Date(year, month - 1, 15);
-    var start = moment(tmp).startOf('month').format('YYYY-MM-DD[T]HH:mm:ss');
-    var end = moment(tmp).endOf('month').format('YYYY-MM-DD[T]HH:mm:ss');
-    console.log(tmp, start, end);
+    var start = moment(tmp).subtract(3, "month").startOf('month').format('YYYY-MM-DD[T]HH:mm:ss');
+    var end = moment(tmp).add(3, "month").endOf('month').format('YYYY-MM-DD[T]HH:mm:ss');
+
     var jobQuery = {},
         taskQuery = {},
         leaveQuery = {};
@@ -137,6 +119,7 @@ exports.getAllDetails = function (req, res, next) {
                 } else {
                     Leave.find(leaveQuery, function (err, leaves) {
                         console.log(err, leaves);
+                        console.log(tmp, start, end);
                         if (err) {
                             return res.status(500).send({
                                 message: "Error looking up Task Data!!!"
@@ -154,6 +137,25 @@ exports.getAllDetails = function (req, res, next) {
         }
     });
 
+}
 
+exports.getCloudinary = function (req, res, next) {
+    let enVariable = process.env.CLOUDINARY_URL || "cloudinary://645321174173731:4cgwvap60ESunffKBcaRH5YxyvE@hlmzh75cl"
+    let tmp = enVariable.split('//')[1];
 
+    let cloudName = tmp.split('@')[1];
+    let key = tmp.split('@')[0].split(':')[0];
+    let secret = tmp.split('@')[0].split(':')[1];
+    const details = {
+        cloudName: cloudName,
+        apiKey: key,
+        apiSecret: secret,
+        httpUrl: `http://res.cloudinary.com/${cloudName}/image/upload`,
+        httpsUrl: `http://res.cloudinary.com/${cloudName}/image/upload`,
+        uploadUrl: `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
+        tags: 'imprint_album',
+        folder: 'imprint',
+        preset: "ij5cs5za"
+    }
+    return res.status(200).send(details);
 }
